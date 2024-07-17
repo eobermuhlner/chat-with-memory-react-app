@@ -1,0 +1,67 @@
+/* App.css */
+
+/* General Container and Layout Styles */
+.container-fluid {
+    margin-top: 20px;
+}
+
+/* Chat List and Assistant List Styles */
+.list-group {
+    margin-top: 20px;
+}
+
+/* Button Styles */
+.btn {
+    margin-bottom: 20px;
+}
+
+/* Modal Styles */
+.modal-header, .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+/* Nav Styles */
+.nav-tabs {
+    margin-bottom: 20px;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+.nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* List Group Item Styles */
+.list-group-item {
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Specific Component Styles */
+.chat-list, .assistant-list {
+    height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}

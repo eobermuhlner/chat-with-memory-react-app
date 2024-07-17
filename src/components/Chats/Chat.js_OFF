@@ -1,0 +1,69 @@
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+
+function App() {
+    const [message, setMessage] = useState('');
+    const [chatHistory, setChatHistory] = useState([]);
+    const chatEndRef = useRef(null);
+
+    const handleSend = async () => {
+        if (message.trim() === '') return;
+        const newChatHistory = [...chatHistory, { sender: 'You', text: message }];
+        setChatHistory([...newChatHistory, { sender: 'System', text: 'Typing...' }]);
+        setMessage('');
+
+        try {
+            const res = await axios.post('http://localhost:8092/chat/send', { message });
+            const assistantMessages = res.data.messages.map(msg => ({
+                sender: msg.sender,
+                text: msg.text,
+                timestamp: msg.timestamp
+            }));
+            setChatHistory([...newChatHistory, ...assistantMessages]);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            setChatHistory([...newChatHistory, { sender: 'System', text: 'Error sending message' }]);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [chatHistory]);
+
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', width: '90%', margin: 'auto', padding: '20px', maxHeight: '100vh' }}>
+                <h2>Chat Application</h2>
+                <div style={{ flex: '1', border: '1px solid #ccc', padding: '10px', overflowY: 'auto', marginBottom: '10px' }}>
+                    {chatHistory.map((chat, index) => (
+                        <div key={index} style={{ margin: '10px 0', border: '1px solid #ccc', borderRadius: '5px', padding: '10px', background: chat.sender === 'You' ? '#e6f7ff' : '#f6ffed' }}>
+                            <strong>{chat.sender}:</strong>
+                            <pre style={{ margin: '5px 0' }}>{chat.text}</pre>
+                        </div>
+                    ))}
+                    <div ref={chatEndRef} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        style={{ flex: '1', padding: '10px', resize: 'none', height: '100px' }}
+                    />
+                    <button onClick={handleSend} style={{ padding: '10px 20px', marginLeft: '10px' }}>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default App;
