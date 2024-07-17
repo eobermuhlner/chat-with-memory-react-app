@@ -13,7 +13,7 @@ function App() {
         setMessage('');
 
         try {
-            const res = await axios.post('http://localhost:8092/chat/send', { message });
+            const res = await axios.post('http://localhost:8092/chats/send', { message });
             const assistantMessages = res.data.messages.map(msg => ({
                 sender: msg.sender,
                 text: msg.text,

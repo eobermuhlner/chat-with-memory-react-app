@@ -10,10 +10,9 @@ function ChatEditor({ chat, onClose }) {
             <Modal.Body>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Chat Name</Form.Label>
-                        <Form.Control type="text" defaultValue={chat.name} />
+                        <Form.Label>Chat Title</Form.Label>
+                        <Form.Control type="text" defaultValue={chat.title} />
                     </Form.Group>
-                    {/* Add other chat properties and controls here */}
                 </Form>
             </Modal.Body>
             <Modal.Footer>
