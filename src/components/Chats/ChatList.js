@@ -25,8 +25,13 @@ function ChatList({ onSelectChat }) {
         onSelectChat(newChat);
     };
 
-    const handleEditChat = (chat) => {
-        setEditingChat(chat);
+    const handleEditChat = async (chat) => {
+        try {
+            const response = await axios.get(`http://localhost:8092/chats/${chat.id}`);
+            setEditingChat(response.data);
+        } catch (error) {
+            console.error('Error fetching chat:', error);
+        }
     };
 
     const handleDeleteChat = async (chatId) => {
@@ -52,8 +57,8 @@ function ChatList({ onSelectChat }) {
                         key={chat.id}
                         chat={chat}
                         onSelect={() => onSelectChat(chat)}
-                        onEdit={handleEditChat}
-                        onDelete={handleDeleteChat}
+                        onEdit={() => handleEditChat(chat)}
+                        onDelete={() => handleDeleteChat(chat.id)}
                     />
                 ))}
             </ListGroup>
