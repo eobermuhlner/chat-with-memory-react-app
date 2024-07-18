@@ -10,6 +10,10 @@ function AssistantList() {
 
     useEffect(() => {
         // Fetch assistants from the REST endpoint
+        fetchAssistants();
+    }, []);
+
+    const fetchAssistants = () => {
         axios.get('http://localhost:8092/assistants')
             .then(response => {
                 setAssistants(response.data);
@@ -17,7 +21,7 @@ function AssistantList() {
             .catch(error => {
                 console.error('Error fetching assistants:', error);
             });
-    }, []);
+    };
 
     const handleCreateAssistant = () => {
         const newAssistant = { name: '', description: '', prompt: '', sortIndex: 0 };
@@ -42,15 +46,21 @@ function AssistantList() {
         }
     };
 
-    const handleSaveEdit = (updatedAssistant) => {
-        if (updatedAssistant.id === undefined) {
-            // If the assistant is newly created, add it to the list
-            setAssistants([...assistants, updatedAssistant]);
-        } else {
-            // Otherwise, update the existing assistant in the list
-            setAssistants(assistants.map(assistant => (assistant.id === updatedAssistant.id ? updatedAssistant : assistant)));
+    const handleSaveEdit = async (updatedAssistant) => {
+        try {
+            let response;
+            if (updatedAssistant.id === undefined) {
+                // If the assistant is newly created, post it to the server
+                response = await axios.post('http://localhost:8092/assistants', updatedAssistant);
+            } else {
+                // Otherwise, update the existing assistant on the server
+                response = await axios.put(`http://localhost:8092/assistants/${updatedAssistant.id}`, updatedAssistant);
+            }
+            setEditingAssistant(null);
+            fetchAssistants();
+        } catch (error) {
+            console.error('Error saving assistant:', error);
         }
-        setEditingAssistant(null);
     };
 
     return (
