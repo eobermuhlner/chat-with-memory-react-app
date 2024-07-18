@@ -65,3 +65,25 @@
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
 }
+
+
+.assistants-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.assistant-item {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+}
+
+.remove-assistant-button {
+    color: #dc3545;
+    margin-left: 5px;
+}

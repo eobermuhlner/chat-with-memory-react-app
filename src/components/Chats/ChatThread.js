@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Button, FormControl, InputGroup, Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
+import { FaTimes } from 'react-icons/fa';
 
 function ChatThread({ chat, onBack }) {
     const [message, setMessage] = useState('');
@@ -135,14 +136,16 @@ function ChatThread({ chat, onBack }) {
                             </Dropdown.Item>
                         ))}
                     </DropdownButton>
-                    <ul className="list-group mb-3">
+                    <div className="assistants-list mb-3">
                         {selectedAssistants.map(assistant => (
-                            <li key={assistant.id} className="list-group-item d-flex justify-content-between align-items-center">
+                            <div key={assistant.id} className="assistant-item">
                                 {assistant.name}
-                                <Button variant="danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>Remove</Button>
-                            </li>
+                                <Button variant="link" size="sm" onClick={() => handleRemoveAssistant(assistant.id)} className="remove-assistant-button">
+                                    <FaTimes />
+                                </Button>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                     <div style={{ flex: '1', border: '1px solid #ccc', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: '50vh' }}>
                         {chatHistory.map((msg, index) => (
                             <div
