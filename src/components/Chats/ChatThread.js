@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import { Button, FormControl, InputGroup, Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { Button, FormControl, InputGroup, Container, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { FaEye, FaEyeSlash, FaEdit, FaCopy } from 'react-icons/fa';
+import ChatEditor from './ChatEditor'; // Assuming ChatEditor is in the same directory
 
 const MarkdownRenderer = ({ text }) => {
     const copyToClipboard = (code) => {
@@ -28,7 +29,7 @@ const MarkdownRenderer = ({ text }) => {
                             {children}
                         </code>
                     ) : (
-                        <div style={{position: 'relative'}}>
+                        <div style={{ position: 'relative' }}>
                             <SyntaxHighlighter
                                 style={darcula}
                                 language={className ? className.replace("language-", "") : ""}
@@ -37,18 +38,23 @@ const MarkdownRenderer = ({ text }) => {
                             >
                                 {String(children).replace(/\n$/, '')}
                             </SyntaxHighlighter>
-                            <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => copyToClipboard(String(children).replace(/\n$/, ''))}
-                                style={{
-                                    position: 'absolute',
-                                    top: '10px',
-                                    right: '10px',
-                                }}
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>Copy code</Tooltip>}
                             >
-                                Copy code
-                            </Button>
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => copyToClipboard(String(children).replace(/\n$/, ''))}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        right: '10px',
+                                    }}
+                                >
+                                    <FaCopy />
+                                </Button>
+                            </OverlayTrigger>
                         </div>
                     );
                 },
@@ -66,12 +72,11 @@ const MarkdownRenderer = ({ text }) => {
     );
 };
 
-function ChatThread({chat, onBack}) {
+function ChatThread({ chat, onBack }) {
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [title, setTitle] = useState(chat.title);
-    const [assistants, setAssistants] = useState([]);
-    const [selectedAssistants, setSelectedAssistants] = useState(chat.assistants || []);
+    const [showEditor, setShowEditor] = useState(false);
     const chatEndRef = useRef(null);
 
     useEffect(() => {
@@ -80,7 +85,6 @@ function ChatThread({chat, onBack}) {
                 const chatResponse = await axios.get(`http://localhost:8092/chats/${chat.id}`);
                 const chatData = chatResponse.data;
                 setTitle(chatData.title);
-                setSelectedAssistants(chatData.assistants || []);
 
                 const messagesResponse = await axios.get(`http://localhost:8092/chats/${chat.id}/messages`);
                 const messages = messagesResponse.data.map(msg => ({
@@ -98,19 +102,6 @@ function ChatThread({chat, onBack}) {
 
         fetchChatDetails();
     }, [chat.id]);
-
-    useEffect(() => {
-        const fetchAssistants = async () => {
-            try {
-                const response = await axios.get('http://localhost:8092/assistants');
-                setAssistants(response.data);
-            } catch (error) {
-                console.error('Error fetching assistants:', error);
-            }
-        };
-
-        fetchAssistants();
-    }, []);
 
     const handleSend = async () => {
         if (message.trim() === '') return;
@@ -141,37 +132,6 @@ function ChatThread({chat, onBack}) {
         }
     };
 
-    const handleTitleChange = async (e) => {
-        setTitle(e.target.value);
-        try {
-            await axios.put(`http://localhost:8092/chats/${chat.id}`, { ...chat, title: e.target.value });
-        } catch (error) {
-            console.error('Error updating title:', error);
-        }
-    };
-
-    const handleAddAssistant = async (assistant) => {
-        if (!selectedAssistants.some(a => a.id === assistant.id)) {
-            const updatedAssistants = [...selectedAssistants, assistant];
-            setSelectedAssistants(updatedAssistants);
-            try {
-                await axios.put(`http://localhost:8092/chats/${chat.id}`, { ...chat, assistants: updatedAssistants });
-            } catch (error) {
-                console.error('Error adding assistant:', error);
-            }
-        }
-    };
-
-    const handleRemoveAssistant = async (assistantId) => {
-        const updatedAssistants = selectedAssistants.filter(a => a.id !== assistantId);
-        setSelectedAssistants(updatedAssistants);
-        try {
-            await axios.put(`http://localhost:8092/chats/${chat.id}`, { ...chat, assistants: updatedAssistants });
-        } catch (error) {
-            console.error('Error removing assistant:', error);
-        }
-    };
-
     const toggleShowSource = (index) => {
         const scrollPosition = window.scrollY;
         const updatedChatHistory = [...chatHistory];
@@ -189,33 +149,16 @@ function ChatThread({chat, onBack}) {
             <Row className="w-100">
                 <Col>
                     <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
-                    <FormControl
-                        type="text"
-                        value={title}
-                        onChange={handleTitleChange}
-                        className="mb-3"
-                    />
-                    <h5>Assistants</h5>
-                    <DropdownButton
-                        id="dropdown-basic-button"
-                        title="Add Assistant"
-                        className="mb-3"
-                    >
-                        {assistants.map(assistant => (
-                            <Dropdown.Item key={assistant.id} onClick={() => handleAddAssistant(assistant)}>
-                                {assistant.name}
-                            </Dropdown.Item>
-                        ))}
-                    </DropdownButton>
-                    <div className="assistants-list mb-3">
-                        {selectedAssistants.map(assistant => (
-                            <div key={assistant.id} className="assistant-item">
-                                {assistant.name}
-                                <Button variant="link" size="sm" onClick={() => handleRemoveAssistant(assistant.id)} className="remove-assistant-button">
-                                    <FaTimes />
-                                </Button>
-                            </div>
-                        ))}
+                    <div className="d-flex align-items-center mb-3">
+                        <h1 className="mb-0">{title}</h1>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Edit chat</Tooltip>}
+                        >
+                            <Button variant="link" onClick={() => setShowEditor(true)} className="ml-2">
+                                <FaEdit />
+                            </Button>
+                        </OverlayTrigger>
                     </div>
                     <div style={{ flex: '1', border: '1px solid #ccc', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: '50vh' }}>
                         {chatHistory.map((msg, index) => (
@@ -232,9 +175,19 @@ function ChatThread({chat, onBack}) {
                                 }}
                             >
                                 <strong>{msg.sender}:</strong>
-                                <Button variant="link" size="sm" onClick={() => toggleShowSource(index)} className="ml-2 toggle-source-btn">
-                                    {msg.showSource ? 'Show Rendered' : 'Show Source'}
-                                </Button>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>{msg.showSource ? 'Show Rendered' : 'Show Source'}</Tooltip>}
+                                >
+                                    <Button
+                                        variant="link"
+                                        size="sm"
+                                        onClick={() => toggleShowSource(index)}
+                                        className="ml-2 toggle-source-btn"
+                                    >
+                                        {msg.showSource ? <FaEyeSlash /> : <FaEye />}
+                                    </Button>
+                                </OverlayTrigger>
                                 {msg.showSource ? (
                                     <pre>{msg.text}</pre>
                                 ) : (
@@ -259,6 +212,16 @@ function ChatThread({chat, onBack}) {
                     </InputGroup>
                 </Col>
             </Row>
+            {showEditor && (
+                <ChatEditor
+                    chat={chat}
+                    onClose={() => setShowEditor(false)}
+                    onSave={(updatedChat) => {
+                        setTitle(updatedChat.title);
+                        setShowEditor(false);
+                    }}
+                />
+            )}
         </Container>
     );
 }

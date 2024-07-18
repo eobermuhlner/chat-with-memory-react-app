@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b25f332-df6d-4b76-a53a-d4aebfc7bc10" name="Changes" comment="align toggle &quot;Show source&quot; right">
+    <list default="true" id="7b25f332-df6d-4b76-a53a-d4aebfc7bc10" name="Changes" comment="update Assistant list after create new">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatEditor.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatList.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatThread.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatThread.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +56,7 @@
       <option name="presentableId" value="Default" />
       <updated>1721248037581</updated>
       <workItem from="1721248038658" duration="12139000" />
-      <workItem from="1721307480213" duration="9351000" />
+      <workItem from="1721307480213" duration="12489000" />
     </task>
     <task id="LOCAL-00001" summary="improve UI for Chat">
       <option name="closed" value="true" />
@@ -123,7 +122,31 @@
       <option name="project" value="LOCAL" />
       <updated>1721313029880</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="add chat prompt">
+      <option name="closed" value="true" />
+      <created>1721325934837</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1721325934837</updated>
+    </task>
+    <task id="LOCAL-00010" summary="compact Assistant list">
+      <option name="closed" value="true" />
+      <created>1721328105615</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1721328105615</updated>
+    </task>
+    <task id="LOCAL-00011" summary="update Assistant list after create new">
+      <option name="closed" value="true" />
+      <created>1721328124634</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1721328124634</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -138,6 +161,9 @@
     <MESSAGE value="render markdown" />
     <MESSAGE value="add syntax highlighting" />
     <MESSAGE value="align toggle &quot;Show source&quot; right" />
-    <option name="LAST_COMMIT_MESSAGE" value="align toggle &quot;Show source&quot; right" />
+    <MESSAGE value="add chat prompt" />
+    <MESSAGE value="compact Assistant list" />
+    <MESSAGE value="update Assistant list after create new" />
+    <option name="LAST_COMMIT_MESSAGE" value="update Assistant list after create new" />
   </component>
 </project>
