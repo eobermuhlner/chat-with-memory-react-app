@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Button, FormControl, InputGroup, Container, Row, Col, Form, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Button, FormControl, InputGroup, Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
 
 function ChatThread({ chat, onBack }) {
     const [message, setMessage] = useState('');
@@ -11,11 +11,16 @@ function ChatThread({ chat, onBack }) {
     const chatEndRef = useRef(null);
 
     useEffect(() => {
-        // Fetch initial chat messages from the REST endpoint
-        const fetchMessages = async () => {
+        // Fetch chat details and messages from the REST endpoint
+        const fetchChatDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:8092/chats/${chat.id}/messages`);
-                const messages = response.data.map(msg => ({
+                const chatResponse = await axios.get(`http://localhost:8092/chats/${chat.id}`);
+                const chatData = chatResponse.data;
+                setTitle(chatData.title);
+                setSelectedAssistants(chatData.assistants || []);
+
+                const messagesResponse = await axios.get(`http://localhost:8092/chats/${chat.id}/messages`);
+                const messages = messagesResponse.data.map(msg => ({
                     sender: msg.sender || 'User',
                     text: msg.text,
                     timestamp: msg.timestamp,
@@ -23,11 +28,11 @@ function ChatThread({ chat, onBack }) {
                 }));
                 setChatHistory(messages);
             } catch (error) {
-                console.error('Error fetching messages:', error);
+                console.error('Error fetching chat details or messages:', error);
             }
         };
 
-        fetchMessages();
+        fetchChatDetails();
     }, [chat.id]);
 
     useEffect(() => {
@@ -43,11 +48,6 @@ function ChatThread({ chat, onBack }) {
 
         fetchAssistants();
     }, []);
-
-    useEffect(() => {
-        // Initialize selected assistants from the chat prop
-        setSelectedAssistants(chat.assistants || []);
-    }, [chat.assistants]);
 
     const handleSend = async () => {
         if (message.trim() === '') return;
