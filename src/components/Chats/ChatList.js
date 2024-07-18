@@ -24,7 +24,7 @@ function ChatList({ onSelectChat }) {
         const now = new Date();
         const formattedDate = format(now, 'yyyy-MM-dd HH:mm:ss');
 
-        const newChat = { title: `New Chat ${formattedDate}`, assistants: [] };
+        const newChat = { title: `New Chat ${formattedDate}`, prompt: '', assistants: [] };
         try {
             const response = await axios.post('http://localhost:8092/chats', newChat);
             const createdChat = response.data;

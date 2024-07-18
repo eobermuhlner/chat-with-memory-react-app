@@ -7,6 +7,10 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const MarkdownRenderer = ({ text }) => {
+    const copyToClipboard = (code) => {
+        navigator.clipboard.writeText(code);
+    };
+
     return (
         <ReactMarkdown
             children={text}
@@ -14,18 +18,47 @@ const MarkdownRenderer = ({ text }) => {
                 code: ({ node, inline, className, children, ...props }) => {
                     const isInline = !className;
                     return isInline ? (
-                        <code style={{ backgroundColor: '#2d2d2d', color: '#f8f8f2', padding: '2px 4px', borderRadius: '4px', display: 'inline' }} {...props}>
+                        <code style={{
+                            backgroundColor: '#2d2d2d',
+                            color: '#f8f8f2',
+                            padding: '2px 4px',
+                            borderRadius: '4px',
+                            display: 'inline'
+                        }} {...props}>
                             {children}
                         </code>
                     ) : (
-                        <SyntaxHighlighter
-                            style={darcula}
-                            language={className ? className.replace("language-", "") : ""}
-                            PreTag="div"
-                            {...props}
-                        >
-                            {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
+                        <div style={{position: 'relative'}}>
+                            <SyntaxHighlighter
+                                style={darcula}
+                                language={className ? className.replace("language-", "") : ""}
+                                PreTag="div"
+                                {...props}
+                            >
+                                {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => copyToClipboard(String(children).replace(/\n$/, ''))}
+                                style={{
+                                    position: 'absolute',
+                                    top: '10px',
+                                    right: '10px',
+                                }}
+                            >
+                                Copy code
+                            </Button>
+                        </div>
+                    );
+                },
+                pre: ({ node, children, ...props }) => {
+                    return (
+                        <div style={{ position: 'relative' }}>
+                            <pre {...props} style={{ position: 'relative', padding: '10px', backgroundColor: '#2d2d2d', color: '#f8f8f2', borderRadius: '4px' }}>
+                                {children}
+                            </pre>
+                        </div>
                     );
                 },
             }}
@@ -33,7 +66,7 @@ const MarkdownRenderer = ({ text }) => {
     );
 };
 
-function ChatThread({ chat, onBack }) {
+function ChatThread({chat, onBack}) {
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [title, setTitle] = useState(chat.title);

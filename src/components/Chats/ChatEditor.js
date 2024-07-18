@@ -4,6 +4,7 @@ import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
 
 function ChatEditor({ chat, onClose, onSave }) {
     const [title, setTitle] = useState(chat.title);
+    const [prompt, setPrompt] = useState(chat.prompt);
     const [assistants, setAssistants] = useState([]);
     const [selectedAssistants, setSelectedAssistants] = useState(chat.assistants);
 
@@ -18,10 +19,22 @@ function ChatEditor({ chat, onClose, onSave }) {
             });
     }, []);
 
-    const handleSave = () => {
-        const updatedChat = { ...chat, title, assistants: selectedAssistants };
-        onSave(updatedChat);
-        onClose();
+    const handleSave = async () => {
+        const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants };
+        try {
+            if (chat.id === undefined) {
+                // Create a new chat
+                const response = await axios.post('http://localhost:8092/chats', updatedChat);
+                onSave(response.data);
+            } else {
+                // Update an existing chat
+                await axios.put(`http://localhost:8092/chats/${chat.id}`, updatedChat);
+                onSave(updatedChat);
+            }
+            onClose();
+        } catch (error) {
+            console.error('Error saving chat:', error);
+        }
     };
 
     const handleSelectAssistant = (assistant) => {
@@ -47,6 +60,16 @@ function ChatEditor({ chat, onClose, onSave }) {
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Prompt</Form.Label>
+                        <Form.Control
+                            type="text"
+                            as="textarea"
+                            rows={6}
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
                         />
                     </Form.Group>
                     <Form.Group>

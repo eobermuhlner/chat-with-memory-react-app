@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b25f332-df6d-4b76-a53a-d4aebfc7bc10" name="Changes" comment="add syntax highlighting">
+    <list default="true" id="7b25f332-df6d-4b76-a53a-d4aebfc7bc10" name="Changes" comment="align toggle &quot;Show source&quot; right">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatEditor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatList.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatThread.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatThread.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -56,7 +57,7 @@
       <option name="presentableId" value="Default" />
       <updated>1721248037581</updated>
       <workItem from="1721248038658" duration="12139000" />
-      <workItem from="1721307480213" duration="5416000" />
+      <workItem from="1721307480213" duration="9351000" />
     </task>
     <task id="LOCAL-00001" summary="improve UI for Chat">
       <option name="closed" value="true" />
@@ -114,7 +115,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721312553573</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="align toggle &quot;Show source&quot; right">
+      <option name="closed" value="true" />
+      <created>1721313029880</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1721313029880</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -128,6 +137,7 @@
     <MESSAGE value="improved date format in chat title, compact assistants in chat thread" />
     <MESSAGE value="render markdown" />
     <MESSAGE value="add syntax highlighting" />
-    <option name="LAST_COMMIT_MESSAGE" value="add syntax highlighting" />
+    <MESSAGE value="align toggle &quot;Show source&quot; right" />
+    <option name="LAST_COMMIT_MESSAGE" value="align toggle &quot;Show source&quot; right" />
   </component>
 </project>
