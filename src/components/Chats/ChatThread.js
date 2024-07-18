@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 import { Button, FormControl, InputGroup, Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 
@@ -161,7 +162,7 @@ function ChatThread({ chat, onBack }) {
                                 }}
                             >
                                 <strong>{msg.sender}:</strong>
-                                <pre style={{ margin: '5px 0' }}>{msg.text}</pre>
+                                <ReactMarkdown>{msg.text}</ReactMarkdown>
                             </div>
                         ))}
                         <div ref={chatEndRef} />
