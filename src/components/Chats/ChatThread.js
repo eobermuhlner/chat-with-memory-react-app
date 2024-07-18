@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Button, FormControl, InputGroup, Container, Row, Col } from 'react-bootstrap';
+import { Button, FormControl, InputGroup, Container, Row, Col, Form, Dropdown, DropdownButton } from 'react-bootstrap';
 
 function ChatThread({ chat, onBack }) {
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
+    const [title, setTitle] = useState(chat.title);
+    const [assistants, setAssistants] = useState([]);
+    const [selectedAssistants, setSelectedAssistants] = useState(chat.assistants || []);
     const chatEndRef = useRef(null);
 
     useEffect(() => {
@@ -27,6 +30,25 @@ function ChatThread({ chat, onBack }) {
         fetchMessages();
     }, [chat.id]);
 
+    useEffect(() => {
+        // Fetch assistants from the REST endpoint
+        const fetchAssistants = async () => {
+            try {
+                const response = await axios.get('http://localhost:8092/assistants');
+                setAssistants(response.data);
+            } catch (error) {
+                console.error('Error fetching assistants:', error);
+            }
+        };
+
+        fetchAssistants();
+    }, []);
+
+    useEffect(() => {
+        // Initialize selected assistants from the chat prop
+        setSelectedAssistants(chat.assistants || []);
+    }, [chat.assistants]);
+
     const handleSend = async () => {
         if (message.trim() === '') return;
         const newChatHistory = [...chatHistory, { sender: 'You', text: message, type: 'User' }];
@@ -34,7 +56,7 @@ function ChatThread({ chat, onBack }) {
         setMessage('');
 
         try {
-            const res = await axios.post('http://localhost:8092/chats/send', { message });
+            const res = await axios.post(`http://localhost:8092/chats/${chat.id}/send`, { message });
             const assistantMessages = res.data.messages.map(msg => ({
                 sender: msg.sender,
                 text: msg.text,
@@ -55,6 +77,37 @@ function ChatThread({ chat, onBack }) {
         }
     };
 
+    const handleTitleChange = async (e) => {
+        setTitle(e.target.value);
+        try {
+            await axios.put(`http://localhost:8092/chats/${chat.id}`, { ...chat, title: e.target.value });
+        } catch (error) {
+            console.error('Error updating title:', error);
+        }
+    };
+
+    const handleAddAssistant = async (assistant) => {
+        if (!selectedAssistants.some(a => a.id === assistant.id)) {
+            const updatedAssistants = [...selectedAssistants, assistant];
+            setSelectedAssistants(updatedAssistants);
+            try {
+                await axios.put(`http://localhost:8092/chats/${chat.id}`, { ...chat, assistants: updatedAssistants });
+            } catch (error) {
+                console.error('Error adding assistant:', error);
+            }
+        }
+    };
+
+    const handleRemoveAssistant = async (assistantId) => {
+        const updatedAssistants = selectedAssistants.filter(a => a.id !== assistantId);
+        setSelectedAssistants(updatedAssistants);
+        try {
+            await axios.put(`http://localhost:8092/chats/${chat.id}`, { ...chat, assistants: updatedAssistants });
+        } catch (error) {
+            console.error('Error removing assistant:', error);
+        }
+    };
+
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chatHistory]);
@@ -64,8 +117,33 @@ function ChatThread({ chat, onBack }) {
             <Row className="w-100">
                 <Col>
                     <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
-                    <h2>{chat.title}</h2>
-                    <div style={{ flex: '1', border: '1px solid #ccc', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: '70vh' }}>
+                    <FormControl
+                        type="text"
+                        value={title}
+                        onChange={handleTitleChange}
+                        className="mb-3"
+                    />
+                    <h5>Assistants</h5>
+                    <DropdownButton
+                        id="dropdown-basic-button"
+                        title="Add Assistant"
+                        className="mb-3"
+                    >
+                        {assistants.map(assistant => (
+                            <Dropdown.Item key={assistant.id} onClick={() => handleAddAssistant(assistant)}>
+                                {assistant.name}
+                            </Dropdown.Item>
+                        ))}
+                    </DropdownButton>
+                    <ul className="list-group mb-3">
+                        {selectedAssistants.map(assistant => (
+                            <li key={assistant.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                {assistant.name}
+                                <Button variant="danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>Remove</Button>
+                            </li>
+                        ))}
+                    </ul>
+                    <div style={{ flex: '1', border: '1px solid #ccc', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: '50vh' }}>
                         {chatHistory.map((msg, index) => (
                             <div
                                 key={index}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { format } from 'date-fns';
 import { ListGroup, Button } from 'react-bootstrap';
 import ChatItem from './ChatItem';
 import ChatEditor from './ChatEditor';
@@ -19,10 +20,19 @@ function ChatList({ onSelectChat }) {
             });
     }, []);
 
-    const handleCreateChat = () => {
-        const newChat = { id: Date.now(), title: 'New Chat' };
-        setChats([...chats, newChat]);
-        onSelectChat(newChat);
+    const handleCreateChat = async () => {
+        const now = new Date();
+        const formattedDate = format(now, 'yyyy-MM-dd HH:mm:ss');
+
+        const newChat = { title: `New Chat ${formattedDate}`, assistants: [] };
+        try {
+            const response = await axios.post('http://localhost:8092/chats', newChat);
+            const createdChat = response.data;
+            setChats([...chats, createdChat]);
+            onSelectChat(createdChat);
+        } catch (error) {
+            console.error('Error creating chat:', error);
+        }
     };
 
     const handleEditChat = async (chat) => {

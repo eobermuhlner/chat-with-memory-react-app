@@ -20,7 +20,7 @@ function AssistantList() {
     }, []);
 
     const handleCreateAssistant = () => {
-        const newAssistant = { id: Date.now(), name: '', description: '', prompt: '', sortIndex: 0 };
+        const newAssistant = { name: '', description: '', prompt: '', sortIndex: 0 };
         setEditingAssistant(newAssistant);
     };
 
@@ -43,7 +43,7 @@ function AssistantList() {
     };
 
     const handleSaveEdit = (updatedAssistant) => {
-        if (updatedAssistant.id === editingAssistant.id) {
+        if (updatedAssistant.id === undefined) {
             // If the assistant is newly created, add it to the list
             setAssistants([...assistants, updatedAssistant]);
         } else {

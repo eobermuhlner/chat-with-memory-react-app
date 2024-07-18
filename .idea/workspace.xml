@@ -4,15 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b25f332-df6d-4b76-a53a-d4aebfc7bc10" name="Changes" comment="improve UI for Chat">
+    <list default="true" id="7b25f332-df6d-4b76-a53a-d4aebfc7bc10" name="Changes" comment="improve UI for Assistant">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Assistants/AssistantEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Assistants/AssistantEditor.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Assistants/AssistantItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Assistants/AssistantItem.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Assistants/AssistantList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Assistants/AssistantList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Chats/AddAssistant.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatEditor.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Chats/Chat_OLD.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Chats/ChatThread.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Chats/ChatThread.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +59,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1721248037581</updated>
-      <workItem from="1721248038658" duration="5843000" />
+      <workItem from="1721248038658" duration="10609000" />
     </task>
     <task id="LOCAL-00001" summary="improve UI for Chat">
       <option name="closed" value="true" />
@@ -70,7 +69,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721254073684</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="improve UI for Assistant">
+      <option name="closed" value="true" />
+      <created>1721255605117</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1721255605117</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -78,6 +85,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="improve UI for Chat" />
-    <option name="LAST_COMMIT_MESSAGE" value="improve UI for Chat" />
+    <MESSAGE value="improve UI for Assistant" />
+    <option name="LAST_COMMIT_MESSAGE" value="improve UI for Assistant" />
   </component>
 </project>

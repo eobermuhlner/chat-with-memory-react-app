@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
 
 function AssistantEditor({ assistant, onClose, onSave }) {
@@ -7,16 +8,28 @@ function AssistantEditor({ assistant, onClose, onSave }) {
     const [prompt, setPrompt] = useState(assistant.prompt);
     const [sortIndex, setSortIndex] = useState(assistant.sortIndex);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const updatedAssistant = { ...assistant, name, description, prompt, sortIndex };
-        onSave(updatedAssistant);
-        onClose();
+        try {
+            if (assistant.id === undefined) {
+                // Create a new assistant
+                const response = await axios.post('http://localhost:8092/assistants', updatedAssistant);
+                onSave(response.data);
+            } else {
+                // Update an existing assistant
+                await axios.put(`http://localhost:8092/assistants/${assistant.id}`, updatedAssistant);
+                onSave(updatedAssistant);
+            }
+            onClose();
+        } catch (error) {
+            console.error('Error saving assistant:', error);
+        }
     };
 
     return (
         <Modal show onHide={onClose} size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>Edit Assistant</Modal.Title>
+                <Modal.Title>{assistant.id === undefined ? 'Create Assistant' : 'Edit Assistant'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
