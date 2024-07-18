@@ -3,6 +3,35 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Button, FormControl, InputGroup, Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+const MarkdownRenderer = ({ text }) => {
+    return (
+        <ReactMarkdown
+            children={text}
+            components={{
+                code: ({ node, inline, className, children, ...props }) => {
+                    const isInline = !className;
+                    return isInline ? (
+                        <code style={{ backgroundColor: '#2d2d2d', color: '#f8f8f2', padding: '2px 4px', borderRadius: '4px', display: 'inline' }} {...props}>
+                            {children}
+                        </code>
+                    ) : (
+                        <SyntaxHighlighter
+                            style={darcula}
+                            language={className ? className.replace("language-", "") : ""}
+                            PreTag="div"
+                            {...props}
+                        >
+                            {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                    );
+                },
+            }}
+        />
+    );
+};
 
 function ChatThread({ chat, onBack }) {
     const [message, setMessage] = useState('');
@@ -26,7 +55,8 @@ function ChatThread({ chat, onBack }) {
                     sender: msg.sender || 'User',
                     text: msg.text,
                     timestamp: msg.timestamp,
-                    type: msg.type || 'User' // Default to 'User' if type is not provided
+                    type: msg.type || 'User', // Default to 'User' if type is not provided
+                    showSource: false, // Add this to track whether to show markdown source
                 }));
                 setChatHistory(messages);
             } catch (error) {
@@ -53,8 +83,8 @@ function ChatThread({ chat, onBack }) {
 
     const handleSend = async () => {
         if (message.trim() === '') return;
-        const newChatHistory = [...chatHistory, { sender: 'You', text: message, type: 'User' }];
-        setChatHistory([...newChatHistory, { sender: 'System', text: 'Typing...', type: 'System' }]);
+        const newChatHistory = [...chatHistory, { sender: 'You', text: message, type: 'User', showSource: false }];
+        setChatHistory([...newChatHistory, { sender: 'System', text: 'Typing...', type: 'System', showSource: false }]);
         setMessage('');
 
         try {
@@ -63,12 +93,13 @@ function ChatThread({ chat, onBack }) {
                 sender: msg.sender,
                 text: msg.text,
                 timestamp: msg.timestamp,
-                type: msg.type
+                type: msg.type,
+                showSource: false,
             }));
             setChatHistory([...newChatHistory, ...assistantMessages]);
         } catch (error) {
             console.error('Error sending message:', error);
-            setChatHistory([...newChatHistory, { sender: 'System', text: 'Error sending message', type: 'System' }]);
+            setChatHistory([...newChatHistory, { sender: 'System', text: 'Error sending message', type: 'System', showSource: false }]);
         }
     };
 
@@ -108,6 +139,14 @@ function ChatThread({ chat, onBack }) {
         } catch (error) {
             console.error('Error removing assistant:', error);
         }
+    };
+
+    const toggleShowSource = (index) => {
+        const scrollPosition = window.scrollY;
+        const updatedChatHistory = [...chatHistory];
+        updatedChatHistory[index].showSource = !updatedChatHistory[index].showSource;
+        setChatHistory(updatedChatHistory);
+        window.scrollTo(0, scrollPosition);
     };
 
     useEffect(() => {
@@ -162,7 +201,14 @@ function ChatThread({ chat, onBack }) {
                                 }}
                             >
                                 <strong>{msg.sender}:</strong>
-                                <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                <Button variant="link" size="sm" onClick={() => toggleShowSource(index)} className="ml-2">
+                                    {msg.showSource ? 'Show Rendered' : 'Show Source'}
+                                </Button>
+                                {msg.showSource ? (
+                                    <pre>{msg.text}</pre>
+                                ) : (
+                                    <MarkdownRenderer text={msg.text} />
+                                )}
                             </div>
                         ))}
                         <div ref={chatEndRef} />
