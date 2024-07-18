@@ -42,7 +42,6 @@ function ChatThread({ chat, onBack }) {
     const chatEndRef = useRef(null);
 
     useEffect(() => {
-        // Fetch chat details and messages from the REST endpoint
         const fetchChatDetails = async () => {
             try {
                 const chatResponse = await axios.get(`http://localhost:8092/chats/${chat.id}`);
@@ -55,8 +54,8 @@ function ChatThread({ chat, onBack }) {
                     sender: msg.sender || 'User',
                     text: msg.text,
                     timestamp: msg.timestamp,
-                    type: msg.type || 'User', // Default to 'User' if type is not provided
-                    showSource: false, // Add this to track whether to show markdown source
+                    type: msg.type || 'User',
+                    showSource: false,
                 }));
                 setChatHistory(messages);
             } catch (error) {
@@ -68,7 +67,6 @@ function ChatThread({ chat, onBack }) {
     }, [chat.id]);
 
     useEffect(() => {
-        // Fetch assistants from the REST endpoint
         const fetchAssistants = async () => {
             try {
                 const response = await axios.get('http://localhost:8092/assistants');
@@ -201,7 +199,7 @@ function ChatThread({ chat, onBack }) {
                                 }}
                             >
                                 <strong>{msg.sender}:</strong>
-                                <Button variant="link" size="sm" onClick={() => toggleShowSource(index)} className="ml-2">
+                                <Button variant="link" size="sm" onClick={() => toggleShowSource(index)} className="ml-2 toggle-source-btn">
                                     {msg.showSource ? 'Show Rendered' : 'Show Source'}
                                 </Button>
                                 {msg.showSource ? (

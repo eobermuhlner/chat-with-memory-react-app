@@ -87,3 +87,8 @@
     color: #dc3545;
     margin-left: 5px;
 }
+
+.toggle-source-btn {
+    float: right;
+    margin-left: auto;
+}
