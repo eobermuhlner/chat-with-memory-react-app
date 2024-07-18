@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Modal, Button, Form, Dropdown, DropdownButton, Card } from 'react-bootstrap';
+import { FaPlus, FaTimes } from 'react-icons/fa'; // Add icons for add and delete
 
 function ChatEditor({ chat, onClose, onSave }) {
     const [title, setTitle] = useState(chat.title);
@@ -76,7 +77,9 @@ function ChatEditor({ chat, onClose, onSave }) {
                         <Form.Label>Assistants</Form.Label>
                         <DropdownButton
                             id="dropdown-basic-button"
-                            title="Add Assistant"
+                            title={<FaPlus />}
+                            variant="outline-primary"
+                            className="ml-auto"
                         >
                             {assistants.map(assistant => (
                                 <Dropdown.Item key={assistant.id} onClick={() => handleSelectAssistant(assistant)}>
@@ -84,14 +87,20 @@ function ChatEditor({ chat, onClose, onSave }) {
                                 </Dropdown.Item>
                             ))}
                         </DropdownButton>
-                        <ul className="list-group mt-2">
+                        <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px' }}>
                             {selectedAssistants.map(assistant => (
-                                <li key={assistant.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    {assistant.name}
-                                    <Button variant="danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>Remove</Button>
-                                </li>
+                                <Card key={assistant.id} className="mr-2 mb-2" style={{ height: 'auto' }}>
+                                    <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                                        <div style={{ marginRight: '1rem' }}>
+                                            {assistant.name}
+                                        </div>
+                                        <Button variant="outline-danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>
+                                            <FaTimes />
+                                        </Button>
+                                    </Card.Body>
+                                </Card>
                             ))}
-                        </ul>
+                        </div>
                     </Form.Group>
                 </Form>
             </Modal.Body>
