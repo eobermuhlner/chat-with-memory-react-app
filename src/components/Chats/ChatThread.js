@@ -4,8 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { Button, FormControl, InputGroup, Container, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FaEye, FaEyeSlash, FaEdit, FaCopy } from 'react-icons/fa';
-import ChatEditor from './ChatEditor'; // Assuming ChatEditor is in the same directory
+import { FaEye, FaEyeSlash, FaCopy } from 'react-icons/fa';
 
 const MarkdownRenderer = ({ text }) => {
     const copyToClipboard = (code) => {
@@ -76,7 +75,6 @@ function ChatThread({ chat, onBack }) {
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [title, setTitle] = useState(chat.title);
-    const [showEditor, setShowEditor] = useState(false);
     const chatEndRef = useRef(null);
 
     useEffect(() => {
@@ -151,17 +149,9 @@ function ChatThread({ chat, onBack }) {
                     <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
                     <div className="d-flex align-items-center mb-3">
                         <h1 className="mb-0">{title}</h1>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Edit chat</Tooltip>}
-                        >
-                            <Button variant="link" onClick={() => setShowEditor(true)} className="ml-2">
-                                <FaEdit />
-                            </Button>
-                        </OverlayTrigger>
                     </div>
                     <div style={{ flex: '1', border: '1px solid #ccc', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: '50vh' }}>
-                        {chatHistory.map((msg, index) => (
+                        {chatHistory && chatHistory.length > 0 && chatHistory.map((msg, index) => (
                             <div
                                 key={index}
                                 style={{
@@ -212,16 +202,6 @@ function ChatThread({ chat, onBack }) {
                     </InputGroup>
                 </Col>
             </Row>
-            {showEditor && (
-                <ChatEditor
-                    chat={chat}
-                    onClose={() => setShowEditor(false)}
-                    onSave={(updatedChat) => {
-                        setTitle(updatedChat.title);
-                        setShowEditor(false);
-                    }}
-                />
-            )}
         </Container>
     );
 }
