@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
+import { FaTimes } from 'react-icons/fa';
 
 function ChatEditor({ chat, onClose, onSave }) {
     const [title, setTitle] = useState(chat.title);
@@ -84,14 +85,16 @@ function ChatEditor({ chat, onClose, onSave }) {
                                 </Dropdown.Item>
                             ))}
                         </DropdownButton>
-                        <ul className="list-group mt-2">
+                        <div className="assistants-list mt-2">
                             {selectedAssistants.map(assistant => (
-                                <li key={assistant.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                <div key={assistant.id} className="assistant-item d-flex justify-content-between align-items-center">
                                     {assistant.name}
-                                    <Button variant="danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>Remove</Button>
-                                </li>
+                                    <Button variant="link" size="sm" onClick={() => handleRemoveAssistant(assistant.id)} className="remove-assistant-button">
+                                        <FaTimes />
+                                    </Button>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </Form.Group>
                 </Form>
             </Modal.Body>
