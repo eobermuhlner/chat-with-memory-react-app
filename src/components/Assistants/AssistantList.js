@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ListGroup, Modal, Button } from 'react-bootstrap';
+import { ListGroup, Modal, Button, Form } from 'react-bootstrap';
 import AssistantItem from './AssistantItem';
 import AssistantEditor from './AssistantEditor';
 
@@ -8,6 +8,7 @@ function AssistantList() {
     const [assistants, setAssistants] = useState([]);
     const [editingAssistant, setEditingAssistant] = useState(null);
     const [assistantToDelete, setAssistantToDelete] = useState(null);
+    const [deleteMessages, setDeleteMessages] = useState(false); // State for checkbox
 
     useEffect(() => {
         // Fetch assistants from the REST endpoint
@@ -40,9 +41,10 @@ function AssistantList() {
 
     const handleDeleteAssistant = async (assistantId) => {
         try {
-            await axios.delete(`http://localhost:8092/assistants/${assistantId}`);
+            await axios.delete(`http://localhost:8092/assistants/${assistantId}`, { params: { deleteMessages } });
             setAssistants(assistants.filter(assistant => assistant.id !== assistantId));
             setAssistantToDelete(null);
+            setDeleteMessages(false); // Reset the checkbox state
         } catch (error) {
             console.error('Error deleting assistant:', error);
         }
@@ -71,6 +73,7 @@ function AssistantList() {
 
     const handleCancelDelete = () => {
         setAssistantToDelete(null);
+        setDeleteMessages(false); // Reset the checkbox state
     };
 
     return (
@@ -92,7 +95,16 @@ function AssistantList() {
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to delete this assistant?</Modal.Body>
+                <Modal.Body>
+                    Are you sure you want to delete this assistant?
+                    <Form.Check
+                        type="checkbox"
+                        label="Also delete all messages"
+                        checked={deleteMessages}
+                        onChange={(e) => setDeleteMessages(e.target.checked)}
+                        className="mt-3"
+                    />
+                </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCancelDelete}>
                         Cancel
