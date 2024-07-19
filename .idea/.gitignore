@@ -1,0 +1,15 @@
+# .idea/.gitignore
+# Ignore user-specific files
+workspace.xml
+tasks.xml
+dictionaries/
+
+# Ignore library configurations (optional)
+libraries/
+
+# Include project configuration files
+!misc.xml
+!modules.xml
+!vcs.xml
+
+# Other specific settings can be included or excluded as needed
