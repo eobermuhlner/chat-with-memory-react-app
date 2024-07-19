@@ -67,11 +67,9 @@ const ChatThread = ({ chat, onBack }) => {
     };
 
     const toggleShowSource = (index) => {
-        const scrollPosition = window.scrollY;
         const updatedChatHistory = [...chatHistory];
         updatedChatHistory[index].showSource = !updatedChatHistory[index].showSource;
         setChatHistory(updatedChatHistory);
-        window.scrollTo(0, scrollPosition);
     };
 
     const handleDeleteMessages = async () => {
@@ -90,7 +88,10 @@ const ChatThread = ({ chat, onBack }) => {
     };
 
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const lastMessage = chatHistory[chatHistory.length - 1];
+        if (lastMessage && lastMessage.sender === 'System') {
+            chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
     }, [chatHistory]);
 
     return (
