@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 
-const DeleteMessagesModal = ({ show, handleClose, handleDelete, transferToLongTerm, setTransferToLongTerm }) => {
+const DeleteMessagesModal = ({ show, handleClose, handleDelete }) => {
+    const [transferToLongTerm, setTransferToLongTerm] = useState(true);
+
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -11,7 +13,7 @@ const DeleteMessagesModal = ({ show, handleClose, handleDelete, transferToLongTe
                 <p>Are you sure you want to delete all messages?</p>
                 <Form.Check
                     type="checkbox"
-                    label="Transfer to long-term memory"
+                    label="Transfer messages to long-term memory"
                     checked={transferToLongTerm}
                     onChange={(e) => setTransferToLongTerm(e.target.checked)}
                 />
