@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ListGroup, Button } from 'react-bootstrap';
+import { ListGroup, Modal, Button } from 'react-bootstrap';
 import AssistantItem from './AssistantItem';
 import AssistantEditor from './AssistantEditor';
 
 function AssistantList() {
     const [assistants, setAssistants] = useState([]);
     const [editingAssistant, setEditingAssistant] = useState(null);
+    const [assistantToDelete, setAssistantToDelete] = useState(null);
 
     useEffect(() => {
         // Fetch assistants from the REST endpoint
@@ -41,6 +42,7 @@ function AssistantList() {
         try {
             await axios.delete(`http://localhost:8092/assistants/${assistantId}`);
             setAssistants(assistants.filter(assistant => assistant.id !== assistantId));
+            setAssistantToDelete(null);
         } catch (error) {
             console.error('Error deleting assistant:', error);
         }
@@ -63,6 +65,14 @@ function AssistantList() {
         }
     };
 
+    const confirmDeleteAssistant = (assistantId) => {
+        setAssistantToDelete(assistantId);
+    };
+
+    const handleCancelDelete = () => {
+        setAssistantToDelete(null);
+    };
+
     return (
         <div>
             <Button onClick={handleCreateAssistant} className="mb-3">Create New Assistant</Button>
@@ -72,11 +82,26 @@ function AssistantList() {
                         key={assistant.id}
                         assistant={assistant}
                         onEdit={() => handleEditAssistant(assistant)}
-                        onDelete={() => handleDeleteAssistant(assistant.id)}
+                        onDelete={() => confirmDeleteAssistant(assistant.id)}
                     />
                 ))}
             </ListGroup>
             {editingAssistant && <AssistantEditor assistant={editingAssistant} onClose={() => setEditingAssistant(null)} onSave={handleSaveEdit} />}
+
+            <Modal show={!!assistantToDelete} onHide={handleCancelDelete}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this assistant?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCancelDelete}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDeleteAssistant(assistantToDelete)}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
