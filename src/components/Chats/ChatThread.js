@@ -108,7 +108,7 @@ function ChatThread({ chat, onBack }) {
         setMessage('');
 
         try {
-            const res = await axios.post(`http://localhost:8092/chats/${chat.id}/send`, { message });
+            const res = await axios.post(`http://localhost:8092/chats/${chat.id}/messages`, { message });
             const assistantMessages = res.data.messages.map(msg => ({
                 sender: msg.sender,
                 text: msg.text,
