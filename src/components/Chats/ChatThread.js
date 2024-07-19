@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import { Button, FormControl, InputGroup, Container, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, FormControl, InputGroup, Container, Row, Col, OverlayTrigger, Tooltip, Modal, Form } from 'react-bootstrap';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FaEye, FaEyeSlash, FaCopy } from 'react-icons/fa';
@@ -75,6 +75,8 @@ function ChatThread({ chat, onBack }) {
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [title, setTitle] = useState(chat.title);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [transferToLongTerm, setTransferToLongTerm] = useState(false);
     const chatEndRef = useRef(null);
 
     useEffect(() => {
@@ -138,6 +140,21 @@ function ChatThread({ chat, onBack }) {
         window.scrollTo(0, scrollPosition);
     };
 
+    const handleDeleteMessages = async () => {
+        try {
+            await axios.delete(`http://localhost:8092/chats/${chat.id}/messages`, {
+                params: {
+                    transferToLongTermMemory: transferToLongTerm
+                }
+            });
+            setChatHistory([]); // Clear the chat history in UI
+        } catch (error) {
+            console.error('Error deleting messages:', error);
+        } finally {
+            setShowDeleteModal(false);
+        }
+    };
+
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chatHistory]);
@@ -146,7 +163,10 @@ function ChatThread({ chat, onBack }) {
         <Container fluid className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
             <Row className="w-100">
                 <Col>
-                    <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
+                        <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete All Messages</Button>
+                    </div>
                     <div className="d-flex align-items-center mb-3">
                         <h1 className="mb-0">{title}</h1>
                     </div>
@@ -202,6 +222,28 @@ function ChatThread({ chat, onBack }) {
                     </InputGroup>
                 </Col>
             </Row>
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete All Messages</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to delete all messages?</p>
+                    <Form.Check
+                        type="checkbox"
+                        label="Transfer to long-term memory"
+                        checked={transferToLongTerm}
+                        onChange={(e) => setTransferToLongTerm(e.target.checked)}
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteMessages}>
+                        Delete All
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 }
