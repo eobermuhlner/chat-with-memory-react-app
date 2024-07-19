@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ListGroup, Button } from 'react-bootstrap';
-import ChatItem from './ChatItem';
+import { ListGroup } from 'react-bootstrap';
+import ChatListItem from './ChatListItem';
 import ChatEditor from './ChatEditor';
+import ChatControls from './ChatControls';
 
 function ChatList({ onSelectChat }) {
     const [chats, setChats] = useState([]);
@@ -58,10 +59,10 @@ function ChatList({ onSelectChat }) {
 
     return (
         <div>
-            <Button onClick={handleCreateChat} className="mb-3">Create New Chat</Button>
+            <ChatControls onCreateChat={handleCreateChat} />
             <ListGroup>
                 {chats.map(chat => (
-                    <ChatItem
+                    <ChatListItem
                         key={chat.id}
                         chat={chat}
                         onSelect={() => onSelectChat(chat)}
