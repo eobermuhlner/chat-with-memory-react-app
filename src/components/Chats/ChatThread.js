@@ -123,7 +123,7 @@ const ChatThread = ({ chat, onBack }) => {
         }
     }, [chatHistory]);
 
-    const getSize = useCallback(index => sizeMap.current[index] || 50, []);
+    const getSize = useCallback(index => (sizeMap.current[index] || 50) + 10, []);  // Added padding - see renderRow()
 
     const setSize = useCallback((index, size) => {
         listRef.current.resetAfterIndex(index);
@@ -131,7 +131,7 @@ const ChatThread = ({ chat, onBack }) => {
     }, []);
 
     const renderRow = ({ index, style }) => (
-        <div style={style}>
+        <div style={{...style, padding: '5px 0'}}>
             <ChatMessage
                 msg={chatHistory[index]}
                 index={index}
