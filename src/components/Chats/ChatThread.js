@@ -170,23 +170,21 @@ const ChatThread = ({ chat, onBack }) => {
                     </div>
                 </Col>
             </Row>
-            <Row className="flex-grow-1 w-100 m-0" style={{ overflowY: 'auto' }}>
-                <Col className="d-flex flex-column p-2">
-                    <div style={{ flex: '1 1 auto', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: 'calc(100vh - 150px)' }}>
-                        <AutoSizer>
-                            {({ height, width }) => (
-                                <List
-                                    height={height}
-                                    width={width}
-                                    itemCount={chatHistory.length}
-                                    itemSize={getSize}
-                                    ref={listRef}
-                                >
-                                    {renderRow}
-                                </List>
-                            )}
-                        </AutoSizer>
-                    </div>
+            <Row className="flex-grow-1 w-100 m-0" style={{ overflowY: 'auto', flexDirection: 'column-reverse' }}>
+                <Col className="d-flex flex-column p-2" style={{ overflowY: 'auto' }}>
+                    <AutoSizer>
+                        {({ height, width }) => (
+                            <List
+                                height={height}
+                                width={width}
+                                itemCount={chatHistory.length}
+                                itemSize={getSize}
+                                ref={listRef}
+                            >
+                                {renderRow}
+                            </List>
+                        )}
+                    </AutoSizer>
                 </Col>
             </Row>
             <Row className="w-100 m-0" style={{ flexShrink: 0 }}>
