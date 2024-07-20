@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 
 const ChatInput = ({ message, setMessage, handleSend, handleKeyDown }) => {
+    console.log('ChatInput render');  // For debugging render calls
     return (
         <InputGroup className="mb-3">
             <FormControl
@@ -19,4 +20,4 @@ const ChatInput = ({ message, setMessage, handleSend, handleKeyDown }) => {
     );
 };
 
-export default ChatInput;
+export default memo(ChatInput, (prevProps, nextProps) => prevProps.message === nextProps.message);

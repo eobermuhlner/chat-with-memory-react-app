@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -12,6 +12,7 @@ const ChatMessage = ({ msg, index, toggleShowSource, setSize }) => {
         }
     }, [index, setSize]);
 
+    console.log('ChatMessage render', index);  // For debugging render calls
     return (
         <div
             ref={messageRef}
@@ -48,4 +49,9 @@ const ChatMessage = ({ msg, index, toggleShowSource, setSize }) => {
     );
 };
 
-export default ChatMessage;
+export default memo(ChatMessage, (prevProps, nextProps) =>
+    prevProps.msg === nextProps.msg &&
+    prevProps.index === nextProps.index &&
+    prevProps.toggleShowSource === nextProps.toggleShowSource &&
+    prevProps.setSize === nextProps.setSize
+);

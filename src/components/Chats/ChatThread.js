@@ -22,7 +22,7 @@ const ChatThread = ({ chat, onBack }) => {
     const listRef = useRef(null);
     const sizeMap = useRef({});
 
-    const handleSend = async () => {
+    const handleSend = useCallback(async () => {
         if (message.trim() === '') return;
         const newChatHistory = [...chatHistory, { sender: 'You', text: message, type: 'User', showSource: false }];
         setChatHistory([...newChatHistory, { sender: 'System', text: 'Typing...', type: 'System', showSource: false }]);
@@ -42,9 +42,9 @@ const ChatThread = ({ chat, onBack }) => {
             console.error('Error sending message:', error);
             setChatHistory([...newChatHistory, { sender: 'System', text: 'Error sending message', type: 'System', showSource: false }]);
         }
-    };
+    }, [message, chat.id, chatHistory]);
 
-    const debouncedHandleSend = debounce(handleSend, 300);
+    const debouncedHandleSend = useCallback(debounce(handleSend, 300), [handleSend]);
 
     useEffect(() => {
         const fetchChatDetails = async () => {
@@ -70,19 +70,19 @@ const ChatThread = ({ chat, onBack }) => {
         fetchChatDetails();
     }, [chat.id]);
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = useCallback((e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             debouncedHandleSend();
         }
-    };
+    }, [debouncedHandleSend]);
 
-    const toggleShowSource = (index) => {
+    const toggleShowSource = useCallback((index) => {
         setSourceContent(chatHistory[index].text);
         setShowSourceModal(true);
-    };
+    }, [chatHistory]);
 
-    const handleDeleteMessages = async () => {
+    const handleDeleteMessages = useCallback(async () => {
         try {
             await axios.delete(`http://localhost:8092/chats/${chat.id}/messages`, {
                 params: {
@@ -95,9 +95,9 @@ const ChatThread = ({ chat, onBack }) => {
         } finally {
             setShowDeleteModal(false);
         }
-    };
+    }, [chat.id, transferToLongTerm]);
 
-    const handleDeleteLongTermMemory = async () => {
+    const handleDeleteLongTermMemory = useCallback(async () => {
         try {
             await axios.delete(`http://localhost:8092/chats/${chat.id}/messages/long-term`);
         } catch (error) {
@@ -105,9 +105,9 @@ const ChatThread = ({ chat, onBack }) => {
         } finally {
             setShowDeleteLongTermModal(false);
         }
-    };
+    }, [chat.id]);
 
-    const handleTransferToLongTerm = async () => {
+    const handleTransferToLongTerm = useCallback(async () => {
         try {
             await axios.post(`http://localhost:8092/chats/${chat.id}/messages/transfer-to-long-term`);
         } catch (error) {
@@ -115,7 +115,7 @@ const ChatThread = ({ chat, onBack }) => {
         } finally {
             setShowTransferModal(false);
         }
-    };
+    }, [chat.id]);
 
     useEffect(() => {
         if (listRef.current) {
@@ -130,7 +130,7 @@ const ChatThread = ({ chat, onBack }) => {
         sizeMap.current = { ...sizeMap.current, [index]: size };
     }, []);
 
-    const renderRow = ({ index, style }) => (
+    const renderRow = useCallback(({ index, style }) => (
         <div style={{...style, padding: '5px 0'}}>
             <ChatMessage
                 msg={chatHistory[index]}
@@ -139,7 +139,7 @@ const ChatThread = ({ chat, onBack }) => {
                 setSize={setSize}
             />
         </div>
-    );
+    ), [chatHistory, toggleShowSource, setSize]);
 
     return (
         <Container fluid className="d-flex flex-column" style={{ height: '100vh', padding: 0 }}>
