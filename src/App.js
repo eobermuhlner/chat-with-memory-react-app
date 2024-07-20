@@ -18,9 +18,9 @@ function App() {
     };
 
     return (
-        <Container fluid>
-            <Row>
-                <Col>
+        <Container fluid style={{ padding: 0 }}>
+            <Row className="m-0">
+                <Col className="p-0">
                     <Nav variant="tabs" activeKey={activeTab} onSelect={(selectedKey) => {
                         setActiveTab(selectedKey);
                         setSelectedChat(null);  // Reset selected chat when switching tabs
@@ -34,8 +34,8 @@ function App() {
                     </Nav>
                 </Col>
             </Row>
-            <Row>
-                <Col>
+            <Row className="flex-grow-1 m-0">
+                <Col className="p-0">
                     {activeTab === 'chats' && (
                         <>
                             {selectedChat ? (

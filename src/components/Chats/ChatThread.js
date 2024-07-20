@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Button, Container, Row, Col, Modal } from 'react-bootstrap';
+import { Button, Container, Row, Col, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import DeleteMessagesModal from './DeleteMessagesModal';
+import { BsArrowLeft, BsTrash, BsEraser, BsBoxArrowInRight } from 'react-icons/bs';
 
 const ChatThread = ({ chat, onBack }) => {
     const [message, setMessage] = useState('');
@@ -11,7 +12,7 @@ const ChatThread = ({ chat, onBack }) => {
     const [title, setTitle] = useState(chat.title);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showDeleteLongTermModal, setShowDeleteLongTermModal] = useState(false);
-    const [showTransferModal, setShowTransferModal] = useState(false); // New state for transfer modal
+    const [showTransferModal, setShowTransferModal] = useState(false);
     const [transferToLongTerm, setTransferToLongTerm] = useState(true);
     const chatEndRef = useRef(null);
 
@@ -117,21 +118,37 @@ const ChatThread = ({ chat, onBack }) => {
     }, [chatHistory]);
 
     return (
-        <Container fluid className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-            <Row className="w-100">
-                <Col>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
-                        <div>
-                            <Button variant="warning" onClick={() => setShowTransferModal(true)}>Transfer to Long Term Memory</Button>
-                            <Button variant="danger" onClick={() => setShowDeleteModal(true)} className="mr-2">Delete All Messages</Button>
-                            <Button variant="danger" onClick={() => setShowDeleteLongTermModal(true)}>Delete Long Term Memory</Button>
-                        </div>
+        <Container fluid className="d-flex flex-column" style={{ height: '100vh', padding: 0 }}>
+            <Row className="w-100 m-0">
+                <Col className="d-flex justify-content-between align-items-center p-2 border-bottom">
+                    <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-back">Back to Chat List</Tooltip>}>
+                        <Button variant="secondary" onClick={onBack}>
+                            <BsArrowLeft />
+                        </Button>
+                    </OverlayTrigger>
+                    <h1 className="mb-0">{title}</h1>
+                    <div>
+                        <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-transfer">Transfer to Long Term Memory</Tooltip>}>
+                            <Button variant="warning" onClick={() => setShowTransferModal(true)}>
+                                <BsBoxArrowInRight />
+                            </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-delete">Delete All Messages</Tooltip>}>
+                            <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
+                                <BsTrash />
+                            </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-delete-long-term">Delete Long Term Memory</Tooltip>}>
+                            <Button variant="danger" onClick={() => setShowDeleteLongTermModal(true)}>
+                                <BsEraser />
+                            </Button>
+                        </OverlayTrigger>
                     </div>
-                    <div className="d-flex align-items-center mb-3">
-                        <h1 className="mb-0">{title}</h1>
-                    </div>
-                    <div style={{ flex: '1', border: '1px solid #ccc', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: '50vh' }}>
+                </Col>
+            </Row>
+            <Row className="flex-grow-1 w-100 m-0" style={{ overflowY: 'auto' }}>
+                <Col className="d-flex flex-column p-2">
+                    <div style={{ flex: '1', padding: '10px', overflowY: 'auto', marginBottom: '10px' }}>
                         {chatHistory && chatHistory.length > 0 && chatHistory.map((msg, index) => (
                             <ChatMessage
                                 key={index}
@@ -142,6 +159,10 @@ const ChatThread = ({ chat, onBack }) => {
                         ))}
                         <div ref={chatEndRef} />
                     </div>
+                </Col>
+            </Row>
+            <Row className="w-100 m-0">
+                <Col className="p-2">
                     <ChatInput
                         message={message}
                         setMessage={setMessage}
