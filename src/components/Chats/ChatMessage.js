@@ -8,11 +8,11 @@ const ChatMessage = ({ msg, index, toggleShowSource, setSize }) => {
 
     useEffect(() => {
         if (messageRef.current) {
-            setSize(index, messageRef.current.getBoundingClientRect().height);
+            const height = messageRef.current.getBoundingClientRect().height;
+            setSize(index, height);
         }
-    }, [index, setSize]);
+    }, [index, setSize, msg]);
 
-    console.log('ChatMessage render', index);  // For debugging render calls
     return (
         <div
             ref={messageRef}

@@ -123,15 +123,19 @@ const ChatThread = ({ chat, onBack }) => {
         }
     }, [chatHistory]);
 
-    const getSize = useCallback(index => (sizeMap.current[index] || 50) + 10, []);  // Added padding - see renderRow()
+    const getSize = useCallback(index => {
+        return (sizeMap.current[index] || 50) + 10; // + 5px padding per message
+    }, []);
 
     const setSize = useCallback((index, size) => {
-        listRef.current.resetAfterIndex(index);
-        sizeMap.current = { ...sizeMap.current, [index]: size };
+        if (size !== sizeMap.current[index]) {
+            sizeMap.current = { ...sizeMap.current, [index]: size };
+            listRef.current.resetAfterIndex(index);
+        }
     }, []);
 
     const renderRow = useCallback(({ index, style }) => (
-        <div style={{...style, padding: '5px 0'}}>
+        <div style={{ ...style, padding: '5px 0' }}>
             <ChatMessage
                 msg={chatHistory[index]}
                 index={index}
@@ -180,6 +184,7 @@ const ChatThread = ({ chat, onBack }) => {
                                 itemCount={chatHistory.length}
                                 itemSize={getSize}
                                 ref={listRef}
+                                style={{ willChange: 'transform' }}
                             >
                                 {renderRow}
                             </List>
