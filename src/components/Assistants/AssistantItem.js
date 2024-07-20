@@ -9,10 +9,10 @@ function AssistantItem({ assistant, onEdit, onDelete }) {
                     <strong>{assistant.name}</strong>
                     <p>{assistant.description}</p>
                 </div>
-                <ButtonGroup>
-                    <Button variant="warning" onClick={() => onEdit(assistant)}>Edit</Button>
+                <div>
+                    <Button variant="secondary" className="me-2" onClick={() => onEdit(assistant)}>Edit</Button>
                     <Button variant="danger" onClick={() => onDelete(assistant.id)}>Delete</Button>
-                </ButtonGroup>
+                </div>
             </div>
         </ListGroup.Item>
     );
