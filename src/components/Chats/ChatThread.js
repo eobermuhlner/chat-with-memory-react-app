@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { debounce } from 'lodash';
 import { Button, Container, Row, Col, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -15,6 +16,30 @@ const ChatThread = ({ chat, onBack }) => {
     const [showTransferModal, setShowTransferModal] = useState(false);
     const [transferToLongTerm, setTransferToLongTerm] = useState(true);
     const chatEndRef = useRef(null);
+
+    const handleSend = async () => {
+        if (message.trim() === '') return;
+        const newChatHistory = [...chatHistory, { sender: 'You', text: message, type: 'User', showSource: false }];
+        setChatHistory([...newChatHistory, { sender: 'System', text: 'Typing...', type: 'System', showSource: false }]);
+        setMessage('');
+
+        try {
+            const res = await axios.post(`http://localhost:8092/chats/${chat.id}/messages`, { message });
+            const assistantMessages = res.data.messages.map(msg => ({
+                sender: msg.sender,
+                text: msg.text,
+                timestamp: msg.timestamp,
+                type: msg.type,
+                showSource: false,
+            }));
+            setChatHistory([...newChatHistory, ...assistantMessages]);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            setChatHistory([...newChatHistory, { sender: 'System', text: 'Error sending message', type: 'System', showSource: false }]);
+        }
+    };
+
+    const debouncedHandleSend = debounce(handleSend, 300);
 
     useEffect(() => {
         const fetchChatDetails = async () => {
@@ -40,32 +65,10 @@ const ChatThread = ({ chat, onBack }) => {
         fetchChatDetails();
     }, [chat.id]);
 
-    const handleSend = async () => {
-        if (message.trim() === '') return;
-        const newChatHistory = [...chatHistory, { sender: 'You', text: message, type: 'User', showSource: false }];
-        setChatHistory([...newChatHistory, { sender: 'System', text: 'Typing...', type: 'System', showSource: false }]);
-        setMessage('');
-
-        try {
-            const res = await axios.post(`http://localhost:8092/chats/${chat.id}/messages`, { message });
-            const assistantMessages = res.data.messages.map(msg => ({
-                sender: msg.sender,
-                text: msg.text,
-                timestamp: msg.timestamp,
-                type: msg.type,
-                showSource: false,
-            }));
-            setChatHistory([...newChatHistory, ...assistantMessages]);
-        } catch (error) {
-            console.error('Error sending message:', error);
-            setChatHistory([...newChatHistory, { sender: 'System', text: 'Error sending message', type: 'System', showSource: false }]);
-        }
-    };
-
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            handleSend();
+            debouncedHandleSend();
         }
     };
 
