@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form, Dropdown, DropdownButton, Card } from 'react-bootstrap';
-import { FaPlus, FaTimes } from 'react-icons/fa'; // Add icons for add and delete
+import { FaPlus, FaTimes } from 'react-icons/fa';
 
 function ChatEditor({ chat, onClose, onSave }) {
     const [title, setTitle] = useState(chat.title);
@@ -10,7 +10,6 @@ function ChatEditor({ chat, onClose, onSave }) {
     const [selectedAssistants, setSelectedAssistants] = useState(chat.assistants);
 
     useEffect(() => {
-        // Fetch assistants from the REST endpoint
         axios.get('http://localhost:8092/assistants')
             .then(response => {
                 setAssistants(response.data);
@@ -24,11 +23,9 @@ function ChatEditor({ chat, onClose, onSave }) {
         const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants };
         try {
             if (chat.id === undefined) {
-                // Create a new chat
                 const response = await axios.post('http://localhost:8092/chats', updatedChat);
                 onSave(response.data);
             } else {
-                // Update an existing chat
                 await axios.put(`http://localhost:8092/chats/${chat.id}`, updatedChat);
                 onSave(updatedChat);
             }
@@ -75,31 +72,36 @@ function ChatEditor({ chat, onClose, onSave }) {
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>Assistants</Form.Label>
-                        <DropdownButton
-                            id="dropdown-basic-button"
-                            title={<FaPlus />}
-                            variant="outline-primary"
-                            className="ml-auto"
-                        >
-                            {assistants.map(assistant => (
-                                <Dropdown.Item key={assistant.id} onClick={() => handleSelectAssistant(assistant)}>
-                                    {assistant.name}
-                                </Dropdown.Item>
-                            ))}
-                        </DropdownButton>
-                        <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px' }}>
-                            {selectedAssistants.map(assistant => (
-                                <Card key={assistant.id} className="mr-2 mb-2" style={{ height: 'auto' }}>
-                                    <Card.Body className="d-flex justify-content-between align-items-center p-2">
-                                        <div style={{ marginRight: '1rem' }}>
-                                            {assistant.name}
-                                        </div>
-                                        <Button variant="outline-danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>
-                                            <FaTimes />
-                                        </Button>
-                                    </Card.Body>
-                                </Card>
-                            ))}
+                        <div className="d-flex align-items-center">
+                            <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
+                                {selectedAssistants.map(assistant => (
+                                    <Card key={assistant.id} className="mr-2 mb-2" style={{ width: 'auto' }}>
+                                        <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                                            <div>
+                                                <div>{assistant.name}</div>
+                                                <div className="text-muted" style={{ fontSize: '0.8rem' }}>
+                                                    {assistant.description}
+                                                </div>
+                                            </div>
+                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>
+                                                <FaTimes />
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                ))}
+                            </div>
+                            <DropdownButton
+                                id="dropdown-basic-button"
+                                title={<FaPlus />}
+                                variant="primary"
+                                className="mr-2"
+                            >
+                                {assistants.map(assistant => (
+                                    <Dropdown.Item key={assistant.id} onClick={() => handleSelectAssistant(assistant)}>
+                                        {assistant.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </DropdownButton>
                         </div>
                     </Form.Group>
                 </Form>
