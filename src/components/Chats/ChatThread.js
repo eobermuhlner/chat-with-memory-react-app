@@ -15,6 +15,8 @@ const ChatThread = ({ chat, onBack }) => {
     const [showDeleteLongTermModal, setShowDeleteLongTermModal] = useState(false);
     const [showTransferModal, setShowTransferModal] = useState(false);
     const [transferToLongTerm, setTransferToLongTerm] = useState(true);
+    const [showSourceModal, setShowSourceModal] = useState(false);
+    const [sourceContent, setSourceContent] = useState('');
     const chatEndRef = useRef(null);
 
     const handleSend = async () => {
@@ -73,9 +75,8 @@ const ChatThread = ({ chat, onBack }) => {
     };
 
     const toggleShowSource = (index) => {
-        const updatedChatHistory = [...chatHistory];
-        updatedChatHistory[index].showSource = !updatedChatHistory[index].showSource;
-        setChatHistory(updatedChatHistory);
+        setSourceContent(chatHistory[index].text);
+        setShowSourceModal(true);
     };
 
     const handleDeleteMessages = async () => {
@@ -210,6 +211,19 @@ const ChatThread = ({ chat, onBack }) => {
                     </Button>
                     <Button variant="primary" onClick={handleTransferToLongTerm}>
                         Transfer to Long Term Memory
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showSourceModal} onHide={() => setShowSourceModal(false)} dialogClassName="source-modal">
+                <Modal.Header closeButton>
+                    <Modal.Title>Markdown Source</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <pre>{sourceContent}</pre>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowSourceModal(false)}>
+                        Close
                     </Button>
                 </Modal.Footer>
             </Modal>
