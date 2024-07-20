@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 
-const DeleteMessagesModal = ({ show, handleClose, handleDelete }) => {
-    const [transferToLongTerm, setTransferToLongTerm] = useState(true);
-
+const DeleteMessagesModal = ({ show, handleClose, handleDelete, transferToLongTerm, setTransferToLongTerm }) => {
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>

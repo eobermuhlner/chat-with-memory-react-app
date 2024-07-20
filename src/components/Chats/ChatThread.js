@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Button, Container, Row, Col, Modal } from 'react-bootstrap';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import DeleteMessagesModal from './DeleteMessagesModal';
@@ -10,6 +10,7 @@ const ChatThread = ({ chat, onBack }) => {
     const [chatHistory, setChatHistory] = useState([]);
     const [title, setTitle] = useState(chat.title);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteLongTermModal, setShowDeleteLongTermModal] = useState(false);
     const [transferToLongTerm, setTransferToLongTerm] = useState(false);
     const chatEndRef = useRef(null);
 
@@ -87,6 +88,16 @@ const ChatThread = ({ chat, onBack }) => {
         }
     };
 
+    const handleDeleteLongTermMemory = async () => {
+        try {
+            await axios.delete(`http://localhost:8092/chats/${chat.id}/messages/long-term`);
+        } catch (error) {
+            console.error('Error deleting long term memory:', error);
+        } finally {
+            setShowDeleteLongTermModal(false);
+        }
+    };
+
     useEffect(() => {
         const lastMessage = chatHistory[chatHistory.length - 1];
         if (lastMessage && lastMessage.sender === 'System') {
@@ -100,7 +111,10 @@ const ChatThread = ({ chat, onBack }) => {
                 <Col>
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
-                        <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete All Messages</Button>
+                        <div>
+                            <Button variant="danger" onClick={() => setShowDeleteModal(true)} className="mr-2">Delete All Messages</Button>
+                            <Button variant="danger" onClick={() => setShowDeleteLongTermModal(true)}>Delete Long Term Memory</Button>
+                        </div>
                     </div>
                     <div className="d-flex align-items-center mb-3">
                         <h1 className="mb-0">{title}</h1>
@@ -131,6 +145,22 @@ const ChatThread = ({ chat, onBack }) => {
                 transferToLongTerm={transferToLongTerm}
                 setTransferToLongTerm={setTransferToLongTerm}
             />
+            <Modal show={showDeleteLongTermModal} onHide={() => setShowDeleteLongTermModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete the long-term memory?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteLongTermModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteLongTermMemory}>
+                        Delete Long Term Memory
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };
