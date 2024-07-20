@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { debounce } from 'lodash';
 import { Button, Container, Row, Col, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { VariableSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import DeleteMessagesModal from './DeleteMessagesModal';
@@ -17,7 +19,8 @@ const ChatThread = ({ chat, onBack }) => {
     const [transferToLongTerm, setTransferToLongTerm] = useState(true);
     const [showSourceModal, setShowSourceModal] = useState(false);
     const [sourceContent, setSourceContent] = useState('');
-    const chatEndRef = useRef(null);
+    const listRef = useRef(null);
+    const sizeMap = useRef({});
 
     const handleSend = async () => {
         if (message.trim() === '') return;
@@ -115,11 +118,28 @@ const ChatThread = ({ chat, onBack }) => {
     };
 
     useEffect(() => {
-        const lastMessage = chatHistory[chatHistory.length - 1];
-        if (lastMessage && lastMessage.sender === 'System') {
-            chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (listRef.current) {
+            listRef.current.scrollToItem(chatHistory.length - 1, 'end');
         }
     }, [chatHistory]);
+
+    const getSize = useCallback(index => sizeMap.current[index] || 50, []);
+
+    const setSize = useCallback((index, size) => {
+        listRef.current.resetAfterIndex(index);
+        sizeMap.current = { ...sizeMap.current, [index]: size };
+    }, []);
+
+    const renderRow = ({ index, style }) => (
+        <div style={style}>
+            <ChatMessage
+                msg={chatHistory[index]}
+                index={index}
+                toggleShowSource={toggleShowSource}
+                setSize={setSize}
+            />
+        </div>
+    );
 
     return (
         <Container fluid className="d-flex flex-column" style={{ height: '100vh', padding: 0 }}>
@@ -152,20 +172,24 @@ const ChatThread = ({ chat, onBack }) => {
             </Row>
             <Row className="flex-grow-1 w-100 m-0" style={{ overflowY: 'auto' }}>
                 <Col className="d-flex flex-column p-2">
-                    <div style={{ flex: '1', padding: '10px', overflowY: 'auto', marginBottom: '10px' }}>
-                        {chatHistory && chatHistory.length > 0 && chatHistory.map((msg, index) => (
-                            <ChatMessage
-                                key={index}
-                                msg={msg}
-                                index={index}
-                                toggleShowSource={toggleShowSource}
-                            />
-                        ))}
-                        <div ref={chatEndRef} />
+                    <div style={{ flex: '1 1 auto', padding: '10px', overflowY: 'auto', marginBottom: '10px', maxHeight: 'calc(100vh - 150px)' }}>
+                        <AutoSizer>
+                            {({ height, width }) => (
+                                <List
+                                    height={height}
+                                    width={width}
+                                    itemCount={chatHistory.length}
+                                    itemSize={getSize}
+                                    ref={listRef}
+                                >
+                                    {renderRow}
+                                </List>
+                            )}
+                        </AutoSizer>
                     </div>
                 </Col>
             </Row>
-            <Row className="w-100 m-0">
+            <Row className="w-100 m-0" style={{ flexShrink: 0 }}>
                 <Col className="p-2">
                     <ChatInput
                         message={message}

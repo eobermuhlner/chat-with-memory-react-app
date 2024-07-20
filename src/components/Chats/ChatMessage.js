@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import MarkdownRenderer from './MarkdownRenderer';
 
-const ChatMessage = ({ msg, index, toggleShowSource }) => {
+const ChatMessage = ({ msg, index, toggleShowSource, setSize }) => {
+    const messageRef = useRef();
+
+    useEffect(() => {
+        if (messageRef.current) {
+            setSize(index, messageRef.current.getBoundingClientRect().height);
+        }
+    }, [index, setSize]);
+
     return (
         <div
+            ref={messageRef}
             style={{
                 margin: '10px 0',
                 border: '1px solid #ccc',
