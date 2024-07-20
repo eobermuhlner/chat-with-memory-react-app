@@ -11,7 +11,8 @@ const ChatThread = ({ chat, onBack }) => {
     const [title, setTitle] = useState(chat.title);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showDeleteLongTermModal, setShowDeleteLongTermModal] = useState(false);
-    const [transferToLongTerm, setTransferToLongTerm] = useState(false);
+    const [showTransferModal, setShowTransferModal] = useState(false); // New state for transfer modal
+    const [transferToLongTerm, setTransferToLongTerm] = useState(true);
     const chatEndRef = useRef(null);
 
     useEffect(() => {
@@ -98,6 +99,16 @@ const ChatThread = ({ chat, onBack }) => {
         }
     };
 
+    const handleTransferToLongTerm = async () => {
+        try {
+            await axios.post(`http://localhost:8092/chats/${chat.id}/messages/transfer-to-long-term`);
+        } catch (error) {
+            console.error('Error transferring messages to long term memory:', error);
+        } finally {
+            setShowTransferModal(false);
+        }
+    };
+
     useEffect(() => {
         const lastMessage = chatHistory[chatHistory.length - 1];
         if (lastMessage && lastMessage.sender === 'System') {
@@ -112,6 +123,7 @@ const ChatThread = ({ chat, onBack }) => {
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <Button variant="secondary" onClick={onBack} className="mb-3">Back to Chat List</Button>
                         <div>
+                            <Button variant="warning" onClick={() => setShowTransferModal(true)}>Transfer to Long Term Memory</Button>
                             <Button variant="danger" onClick={() => setShowDeleteModal(true)} className="mr-2">Delete All Messages</Button>
                             <Button variant="danger" onClick={() => setShowDeleteLongTermModal(true)}>Delete Long Term Memory</Button>
                         </div>
@@ -158,6 +170,22 @@ const ChatThread = ({ chat, onBack }) => {
                     </Button>
                     <Button variant="danger" onClick={handleDeleteLongTermMemory}>
                         Delete Long Term Memory
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showTransferModal} onHide={() => setShowTransferModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Transfer</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to transfer all short-term messages to long-term memory?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowTransferModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleTransferToLongTerm}>
+                        Transfer to Long Term Memory
                     </Button>
                 </Modal.Footer>
             </Modal>
