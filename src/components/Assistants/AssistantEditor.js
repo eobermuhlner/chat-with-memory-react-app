@@ -1,15 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Dropdown, DropdownButton, Card } from 'react-bootstrap';
+import { FaPlus, FaTimes } from 'react-icons/fa';
 
 function AssistantEditor({ assistant, onClose, onSave }) {
     const [name, setName] = useState(assistant.name);
     const [description, setDescription] = useState(assistant.description);
     const [prompt, setPrompt] = useState(assistant.prompt);
     const [sortIndex, setSortIndex] = useState(assistant.sortIndex);
+    const [tools, setTools] = useState([]);
+    const [selectedTools, setSelectedTools] = useState(assistant.tools || []);
+
+    useEffect(() => {
+        // Fetch available tools (replace the URL with your actual endpoint)
+        axios.get('http://localhost:8092/tools')
+            .then(response => {
+                setTools(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching tools:', error);
+            });
+    }, []);
 
     const handleSave = async () => {
-        const updatedAssistant = { ...assistant, name, description, prompt, sortIndex };
+        const updatedAssistant = { ...assistant, name, description, prompt, sortIndex, tools: selectedTools };
         try {
             if (assistant.id === undefined) {
                 // Create a new assistant
@@ -24,6 +38,16 @@ function AssistantEditor({ assistant, onClose, onSave }) {
         } catch (error) {
             console.error('Error saving assistant:', error);
         }
+    };
+
+    const handleSelectTool = (tool) => {
+        if (!selectedTools.includes(tool)) {
+            setSelectedTools([...selectedTools, tool]);
+        }
+    };
+
+    const handleRemoveTool = (tool) => {
+        setSelectedTools(selectedTools.filter(t => t !== tool));
     };
 
     return (
@@ -66,6 +90,35 @@ function AssistantEditor({ assistant, onClose, onSave }) {
                             value={sortIndex}
                             onChange={(e) => setSortIndex(parseInt(e.target.value))}
                         />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Tools</Form.Label>
+                        <div className="d-flex align-items-center">
+                            <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
+                                {selectedTools.map(tool => (
+                                    <Card key={tool} className="mr-2 mb-2" style={{ width: 'auto' }}>
+                                        <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                                            <div>{tool}</div>
+                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveTool(tool)}>
+                                                <FaTimes />
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                ))}
+                            </div>
+                            <DropdownButton
+                                id="dropdown-basic-button"
+                                title={<FaPlus />}
+                                variant="primary"
+                                className="mr-2"
+                            >
+                                {tools.map(tool => (
+                                    <Dropdown.Item key={tool} onClick={() => handleSelectTool(tool)}>
+                                        {tool}
+                                    </Dropdown.Item>
+                                ))}
+                            </DropdownButton>
+                        </div>
                     </Form.Group>
                 </Form>
             </Modal.Body>

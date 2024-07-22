@@ -8,6 +8,8 @@ function ChatEditor({ chat, onClose, onSave }) {
     const [prompt, setPrompt] = useState(chat.prompt);
     const [assistants, setAssistants] = useState([]);
     const [selectedAssistants, setSelectedAssistants] = useState(chat.assistants);
+    const [tools, setTools] = useState([]);
+    const [selectedTools, setSelectedTools] = useState(chat.tools || []);
 
     useEffect(() => {
         axios.get('http://localhost:8092/assistants')
@@ -17,10 +19,18 @@ function ChatEditor({ chat, onClose, onSave }) {
             .catch(error => {
                 console.error('Error fetching assistants:', error);
             });
+
+        axios.get('http://localhost:8092/tools')
+            .then(response => {
+                setTools(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching tools:', error);
+            });
     }, []);
 
     const handleSave = async () => {
-        const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants };
+        const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants, tools: selectedTools };
         try {
             if (chat.id === undefined) {
                 const response = await axios.post('http://localhost:8092/chats', updatedChat);
@@ -45,10 +55,20 @@ function ChatEditor({ chat, onClose, onSave }) {
         setSelectedAssistants(selectedAssistants.filter(a => a.id !== assistantId));
     };
 
+    const handleSelectTool = (tool) => {
+        if (!selectedTools.includes(tool)) {
+            setSelectedTools([...selectedTools, tool]);
+        }
+    };
+
+    const handleRemoveTool = (tool) => {
+        setSelectedTools(selectedTools.filter(t => t !== tool));
+    };
+
     return (
         <Modal show onHide={onClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Edit Chat</Modal.Title>
+                <Modal.Title>{chat.id === undefined ? 'Create Chat' : 'Edit Chat'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -63,7 +83,6 @@ function ChatEditor({ chat, onClose, onSave }) {
                     <Form.Group>
                         <Form.Label>Prompt</Form.Label>
                         <Form.Control
-                            type="text"
                             as="textarea"
                             rows={6}
                             value={prompt}
@@ -99,6 +118,35 @@ function ChatEditor({ chat, onClose, onSave }) {
                                 {assistants.map(assistant => (
                                     <Dropdown.Item key={assistant.id} onClick={() => handleSelectAssistant(assistant)}>
                                         {assistant.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </DropdownButton>
+                        </div>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Tools</Form.Label>
+                        <div className="d-flex align-items-center">
+                            <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
+                                {selectedTools.map(tool => (
+                                    <Card key={tool} className="mr-2 mb-2" style={{ width: 'auto' }}>
+                                        <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                                            <div>{tool}</div>
+                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveTool(tool)}>
+                                                <FaTimes />
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                ))}
+                            </div>
+                            <DropdownButton
+                                id="dropdown-basic-button"
+                                title={<FaPlus />}
+                                variant="primary"
+                                className="mr-2"
+                            >
+                                {tools.map(tool => (
+                                    <Dropdown.Item key={tool} onClick={() => handleSelectTool(tool)}>
+                                        {tool}
                                     </Dropdown.Item>
                                 ))}
                             </DropdownButton>
