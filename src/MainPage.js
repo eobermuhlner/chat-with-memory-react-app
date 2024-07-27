@@ -4,6 +4,7 @@ import { Container, Row, Col, Nav } from 'react-bootstrap';
 import ChatList from './components/Chats/ChatList';
 import AssistantList from './components/Assistants/AssistantList';
 import ChatThread from './components/Chats/ChatThread';
+import DocumentList from './components/Documents/DocumentList'; // Import the new component
 
 const MainPage = () => {
     const [activeTab, setActiveTab] = useState('chats');
@@ -35,6 +36,9 @@ const MainPage = () => {
                                 <Nav.Item>
                                     <Nav.Link eventKey="assistants">Assistants</Nav.Link>
                                 </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="documents">Documents</Nav.Link> {/* New Tab */}
+                                </Nav.Item>
                             </Nav>
                         </Col>
                     </Row>
@@ -42,6 +46,7 @@ const MainPage = () => {
                         <Col className="p-0">
                             {activeTab === 'chats' && <ChatList onSelectChat={handleSelectChat} />}
                             {activeTab === 'assistants' && <AssistantList />}
+                            {activeTab === 'documents' && <DocumentList />} {/* New Tab Content */}
                         </Col>
                     </Row>
                 </>

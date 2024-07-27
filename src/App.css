@@ -95,3 +95,18 @@
 .source-modal .modal-dialog {
     max-width: 80%;
 }
+
+.segment-container {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.segment-text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 60vh;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f7f7f7;
+}
