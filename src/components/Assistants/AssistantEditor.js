@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Modal, Button, Form, Dropdown, DropdownButton, Card } from 'react-bootstrap';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import ToastNotification, { showToast } from '../ToastNotification';
 
 const API_URL = 'http://localhost:8092';
 
@@ -26,8 +27,7 @@ function AssistantEditor({ assistant, onClose, onSave }) {
                 setTools(toolsResponse.data);
                 setDocuments(documentsResponse.data);
             } catch (error) {
-                console.error('Error fetching tools or documents:', error);
-                // Add user notification for error
+                showToast('Error fetching tools or documents: ' + error.message, 'error');
             }
         };
         fetchToolsAndDocuments();
@@ -39,14 +39,15 @@ function AssistantEditor({ assistant, onClose, onSave }) {
             if (assistant.id === null) {
                 const response = await axios.post(`${API_URL}/assistants`, updatedAssistant);
                 onSave(response.data);
+                showToast('Assistant created successfully', 'success');
             } else {
                 await axios.put(`${API_URL}/assistants/${assistant.id}`, updatedAssistant);
                 onSave(updatedAssistant);
+                showToast('Assistant updated successfully', 'success');
             }
             onClose();
         } catch (error) {
-            console.error('Error saving assistant:', error);
-            // Add user notification for error
+            showToast('Error saving assistant: ' + error.message, 'error');
         }
     };
 
@@ -72,6 +73,7 @@ function AssistantEditor({ assistant, onClose, onSave }) {
 
     return (
         <Modal show onHide={onClose} size="lg">
+            <ToastNotification />
             <Modal.Header closeButton>
                 <Modal.Title>{assistant.id === null ? 'Create Assistant' : 'Edit Assistant'}</Modal.Title>
             </Modal.Header>

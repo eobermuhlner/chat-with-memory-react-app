@@ -4,6 +4,7 @@ import { ListGroup, Modal, Button, Form } from 'react-bootstrap';
 import AssistantItem from './AssistantItem';
 import AssistantEditor from './AssistantEditor';
 import PropTypes from 'prop-types';
+import ToastNotification, { showToast } from '../ToastNotification';
 
 const API_URL = 'http://localhost:8092';
 
@@ -22,8 +23,7 @@ function AssistantList() {
             const response = await axios.get(`${API_URL}/assistants`);
             setAssistants(response.data);
         } catch (error) {
-            console.error('Error fetching assistants:', error);
-            // Add user notification for error
+            showToast('Error fetching assistants: ' + error.message, 'error');
         }
     };
 
@@ -37,8 +37,8 @@ function AssistantList() {
             const response = await axios.get(`${API_URL}/assistants/${assistant.id}`);
             setEditingAssistant(response.data);
         } catch (error) {
-            console.error('Error fetching assistant:', error);
-            // Add user notification for error
+            console.log('ERROR ' + error.message)
+            showToast('Error fetching assistant: ' + error.message, 'error');
         }
     };
 
@@ -48,9 +48,9 @@ function AssistantList() {
             setAssistants(prevAssistants => prevAssistants.filter(assistant => assistant.id !== assistantId));
             setAssistantToDelete(null);
             setDeleteMessages(false);
+            showToast('Assistant deleted successfully', 'success');
         } catch (error) {
-            console.error('Error deleting assistant:', error);
-            // Add user notification for error
+            showToast('Error deleting assistant: ' + error.message, 'error');
         }
     };
 
@@ -74,6 +74,7 @@ function AssistantList() {
 
     return (
         <div>
+            <ToastNotification />
             <Button onClick={handleCreateAssistant} className="mb-3">Create New Assistant</Button>
             <ListGroup>
                 {assistants.map(assistant => (

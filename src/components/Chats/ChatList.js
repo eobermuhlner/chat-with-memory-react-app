@@ -4,6 +4,7 @@ import { ListGroup, Modal, Button } from 'react-bootstrap';
 import ChatListItem from './ChatListItem';
 import ChatEditor from './ChatEditor';
 import ChatControls from './ChatControls';
+import ToastNotification, { showToast } from '../ToastNotification';
 
 function ChatList({ onSelectChat }) {
     const [chats, setChats] = useState([]);
@@ -17,7 +18,7 @@ function ChatList({ onSelectChat }) {
                 setChats(response.data);
             })
             .catch(error => {
-                console.error('Error fetching chats:', error);
+                showToast('Error fetching chats: ' + error.message, 'error');
             });
     }, []);
 
@@ -27,7 +28,7 @@ function ChatList({ onSelectChat }) {
             const newChatTemplate = response.data;
             setEditingChat(newChatTemplate);  // Open the ChatEditor with the new chat template
         } catch (error) {
-            console.error('Error initializing new chat:', error);
+            showToast('Error initializing new chat: ' + error.message, 'error');
         }
     };
 
@@ -36,7 +37,7 @@ function ChatList({ onSelectChat }) {
             const response = await axios.get(`http://localhost:8092/chats/${chat.id}`);
             setEditingChat(response.data);
         } catch (error) {
-            console.error('Error fetching chat:', error);
+            showToast('Error fetching chat: ' + error.message, 'error');
         }
     };
 
@@ -45,8 +46,9 @@ function ChatList({ onSelectChat }) {
             await axios.delete(`http://localhost:8092/chats/${chatId}`);
             setChats(chats.filter(chat => chat.id !== chatId));
             setChatToDelete(null);
+            showToast('Chat deleted successfully', 'success');
         } catch (error) {
-            console.error('Error deleting chat:', error);
+            showToast('Error deleting chat: ' + error.message, 'error');
         }
     };
 
@@ -57,6 +59,7 @@ function ChatList({ onSelectChat }) {
             setChats(chats.map(chat => (chat.id === savedChat.id ? savedChat : chat)));
         }
         setEditingChat(null);
+        showToast('Chat saved successfully', 'success');
     };
 
     const confirmDeleteChat = (chatId) => {
@@ -69,6 +72,7 @@ function ChatList({ onSelectChat }) {
 
     return (
         <div>
+            <ToastNotification />
             <ChatControls onCreateChat={handleCreateChat} />
             <ListGroup>
                 {chats.map(chat => (

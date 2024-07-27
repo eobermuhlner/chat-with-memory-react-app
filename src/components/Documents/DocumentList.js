@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ListGroup, Modal, Button, Form } from 'react-bootstrap';
-import DocumentItem from './DocumentItem'; // Create a similar component like AssistantItem
+import DocumentItem from './DocumentItem';
+import ToastNotification, { showToast } from '../ToastNotification';
 
 function DocumentList() {
     const [documents, setDocuments] = useState([]);
@@ -22,7 +23,7 @@ function DocumentList() {
                 setDocuments(response.data);
             })
             .catch(error => {
-                console.error('Error fetching documents:', error);
+                showToast('Error fetching documents: ' + error.message, 'error');
             });
     };
 
@@ -34,7 +35,7 @@ function DocumentList() {
                 setShowSegmentsModal(true);
             })
             .catch(error => {
-                console.error('Error fetching segments:', error);
+                showToast('Error fetching segments: ' + error.message, 'error');
             });
     };
 
@@ -62,8 +63,9 @@ function DocumentList() {
             setShowUploadModal(false);
             setFile(null);
             setSplitterStrategy('AI'); // Reset to default value
+            showToast('Document uploaded successfully', 'success');
         } catch (error) {
-            console.error('Error uploading document:', error);
+            showToast('Error uploading document: ' + error.message, 'error');
         }
     };
 
@@ -71,8 +73,9 @@ function DocumentList() {
         try {
             await axios.delete(`http://localhost:8092/documents/${documentId}`);
             setDocuments(documents.filter(document => document.id !== documentId));
+            showToast('Document deleted successfully', 'success');
         } catch (error) {
-            console.error('Error deleting document:', error);
+            showToast('Error deleting document: ' + error.message, 'error');
         }
     };
 
@@ -86,6 +89,7 @@ function DocumentList() {
 
     return (
         <div>
+            <ToastNotification /> {/* Add the ToastNotification component */}
             <Button onClick={() => setShowUploadModal(true)} className="mb-3">Upload New Document</Button>
             <ListGroup>
                 {documents.map(document => (

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form, Dropdown, DropdownButton, Card } from 'react-bootstrap';
 import { FaPlus, FaTimes } from 'react-icons/fa';
+import ToastNotification, { showToast } from '../ToastNotification';
 
 function ChatEditor({ chat, onClose, onSave }) {
     const [title, setTitle] = useState(chat.title);
@@ -19,7 +20,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                 setAssistants(response.data);
             })
             .catch(error => {
-                console.error('Error fetching assistants:', error);
+                showToast('Error fetching assistants: ' + error.message, 'error');
             });
 
         axios.get('http://localhost:8092/tools')
@@ -27,7 +28,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                 setTools(response.data);
             })
             .catch(error => {
-                console.error('Error fetching tools:', error);
+                showToast('Error fetching tools: ' + error.message, 'error');
             });
 
         axios.get('http://localhost:8092/documents')
@@ -35,7 +36,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                 setDocuments(response.data);
             })
             .catch(error => {
-                console.error('Error fetching documents:', error);
+                showToast('Error fetching documents: ' + error.message, 'error');
             });
     }, []);
 
@@ -45,13 +46,15 @@ function ChatEditor({ chat, onClose, onSave }) {
             if (chat.id == null) {
                 const response = await axios.post('http://localhost:8092/chats', updatedChat);
                 onSave(response.data);
+                showToast('Chat created successfully', 'success');
             } else {
                 await axios.put(`http://localhost:8092/chats/${chat.id}`, updatedChat);
                 onSave(updatedChat);
+                showToast('Chat updated successfully', 'success');
             }
             onClose();
         } catch (error) {
-            console.error('Error saving chat:', error);
+            showToast('Error saving chat: ' + error.message, 'error');
         }
     };
 
@@ -87,6 +90,7 @@ function ChatEditor({ chat, onClose, onSave }) {
 
     return (
         <Modal show onHide={onClose} size="lg">
+            <ToastNotification /> {/* Add the ToastNotification component */}
             <Modal.Header closeButton>
                 <Modal.Title>{chat.id == null ? 'Create Chat' : 'Edit Chat'}</Modal.Title>
             </Modal.Header>

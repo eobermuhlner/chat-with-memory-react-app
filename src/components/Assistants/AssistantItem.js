@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListGroup, ButtonGroup, Button } from 'react-bootstrap';
+import {Button, ListGroup} from 'react-bootstrap';
 
 function AssistantItem({ assistant, onEdit, onDelete }) {
     return (

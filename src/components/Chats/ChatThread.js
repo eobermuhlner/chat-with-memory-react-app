@@ -8,6 +8,7 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import DeleteMessagesModal from './DeleteMessagesModal';
 import { BsArrowLeft, BsTrash, BsEraser, BsBoxArrowInRight } from 'react-icons/bs';
+import ToastNotification, { showToast } from '../ToastNotification';
 
 const ChatThread = ({ chat, onBack }) => {
     const [message, setMessage] = useState('');
@@ -39,7 +40,7 @@ const ChatThread = ({ chat, onBack }) => {
             }));
             setChatHistory([...newChatHistory, ...assistantMessages]);
         } catch (error) {
-            console.error('Error sending message:', error);
+            showToast('Error sending message: ' + error.message, 'error');
             setChatHistory([...newChatHistory, { sender: 'System', text: 'Error sending message', type: 'System', showSource: false }]);
         }
     }, [message, chat.id, chatHistory]);
@@ -63,7 +64,7 @@ const ChatThread = ({ chat, onBack }) => {
                 }));
                 setChatHistory(messages);
             } catch (error) {
-                console.error('Error fetching chat details or messages:', error);
+                showToast('Error fetching chat details or messages: ' + error.message, 'error');
             }
         };
 
@@ -90,8 +91,9 @@ const ChatThread = ({ chat, onBack }) => {
                 }
             });
             setChatHistory([]); // Clear the chat history in UI
+            showToast('Messages deleted successfully', 'success');
         } catch (error) {
-            console.error('Error deleting messages:', error);
+            showToast('Error deleting messages: ' + error.message, 'error');
         } finally {
             setShowDeleteModal(false);
         }
@@ -100,8 +102,9 @@ const ChatThread = ({ chat, onBack }) => {
     const handleDeleteLongTermMemory = useCallback(async () => {
         try {
             await axios.delete(`http://localhost:8092/chats/${chat.id}/messages/long-term`);
+            showToast('Long-term memory deleted successfully', 'success');
         } catch (error) {
-            console.error('Error deleting long term memory:', error);
+            showToast('Error deleting long-term memory: ' + error.message, 'error');
         } finally {
             setShowDeleteLongTermModal(false);
         }
@@ -110,8 +113,9 @@ const ChatThread = ({ chat, onBack }) => {
     const handleTransferToLongTerm = useCallback(async () => {
         try {
             await axios.post(`http://localhost:8092/chats/${chat.id}/messages/transfer-to-long-term`);
+            showToast('Messages transferred to long-term memory successfully', 'success');
         } catch (error) {
-            console.error('Error transferring messages to long term memory:', error);
+            showToast('Error transferring messages to long-term memory: ' + error.message, 'error');
         } finally {
             setShowTransferModal(false);
         }
@@ -147,6 +151,7 @@ const ChatThread = ({ chat, onBack }) => {
 
     return (
         <Container fluid className="d-flex flex-column" style={{ height: '100vh', padding: 0 }}>
+            <ToastNotification /> {/* Add the ToastNotification component */}
             <Row className="w-100 m-0">
                 <Col className="d-flex justify-content-between align-items-center p-2 border-bottom">
                     <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-back">Back to Chat List</Tooltip>}>
