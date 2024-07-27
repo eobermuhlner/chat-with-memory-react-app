@@ -3,68 +3,64 @@ import axios from 'axios';
 import { ListGroup, Modal, Button, Form } from 'react-bootstrap';
 import AssistantItem from './AssistantItem';
 import AssistantEditor from './AssistantEditor';
+import PropTypes from 'prop-types';
+
+const API_URL = 'http://localhost:8092';
 
 function AssistantList() {
     const [assistants, setAssistants] = useState([]);
     const [editingAssistant, setEditingAssistant] = useState(null);
     const [assistantToDelete, setAssistantToDelete] = useState(null);
-    const [deleteMessages, setDeleteMessages] = useState(false); // State for checkbox
+    const [deleteMessages, setDeleteMessages] = useState(false);
 
     useEffect(() => {
-        // Fetch assistants from the REST endpoint
         fetchAssistants();
     }, []);
 
-    const fetchAssistants = () => {
-        axios.get('http://localhost:8092/assistants')
-            .then(response => {
-                setAssistants(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching assistants:', error);
-            });
+    const fetchAssistants = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/assistants`);
+            setAssistants(response.data);
+        } catch (error) {
+            console.error('Error fetching assistants:', error);
+            // Add user notification for error
+        }
     };
 
     const handleCreateAssistant = () => {
-        const newAssistant = { name: '', description: '', prompt: '', sortIndex: 0 };
+        const newAssistant = { id: null, name: '', description: '', prompt: '', sortIndex: 0 };
         setEditingAssistant(newAssistant);
     };
 
     const handleEditAssistant = async (assistant) => {
         try {
-            const response = await axios.get(`http://localhost:8092/assistants/${assistant.id}`);
+            const response = await axios.get(`${API_URL}/assistants/${assistant.id}`);
             setEditingAssistant(response.data);
         } catch (error) {
             console.error('Error fetching assistant:', error);
+            // Add user notification for error
         }
     };
 
     const handleDeleteAssistant = async (assistantId) => {
         try {
-            await axios.delete(`http://localhost:8092/assistants/${assistantId}`, { params: { deleteMessages } });
-            setAssistants(assistants.filter(assistant => assistant.id !== assistantId));
+            await axios.delete(`${API_URL}/assistants/${assistantId}`, { params: { deleteMessages } });
+            setAssistants(prevAssistants => prevAssistants.filter(assistant => assistant.id !== assistantId));
             setAssistantToDelete(null);
-            setDeleteMessages(false); // Reset the checkbox state
+            setDeleteMessages(false);
         } catch (error) {
             console.error('Error deleting assistant:', error);
+            // Add user notification for error
         }
     };
 
     const handleSaveEdit = async (updatedAssistant) => {
-        try {
-            let response;
-            if (updatedAssistant.id === undefined) {
-                // If the assistant is newly created, post it to the server
-                response = await axios.post('http://localhost:8092/assistants', updatedAssistant);
-            } else {
-                // Otherwise, update the existing assistant on the server
-                response = await axios.put(`http://localhost:8092/assistants/${updatedAssistant.id}`, updatedAssistant);
-            }
-            setEditingAssistant(null);
-            fetchAssistants();
-        } catch (error) {
-            console.error('Error saving assistant:', error);
+        if (editingAssistant.id == null) {
+            setAssistants(prevAssistants => [...prevAssistants, updatedAssistant]);
+        } else {
+            setAssistants(prevAssistants => prevAssistants.map(assistant => assistant.id === updatedAssistant.id ? updatedAssistant : assistant));
         }
+        setEditingAssistant(null);
     };
 
     const confirmDeleteAssistant = (assistantId) => {
@@ -73,7 +69,7 @@ function AssistantList() {
 
     const handleCancelDelete = () => {
         setAssistantToDelete(null);
-        setDeleteMessages(false); // Reset the checkbox state
+        setDeleteMessages(false);
     };
 
     return (
@@ -117,5 +113,9 @@ function AssistantList() {
         </div>
     );
 }
+
+AssistantList.propTypes = {
+    onSelectAssistant: PropTypes.func.isRequired,
+};
 
 export default AssistantList;

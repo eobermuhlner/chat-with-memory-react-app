@@ -25,13 +25,9 @@ function ChatList({ onSelectChat }) {
         try {
             const response = await axios.get('http://localhost:8092/chats/new');
             const newChatTemplate = response.data;
-
-            const createResponse = await axios.post('http://localhost:8092/chats', newChatTemplate);
-            const createdChat = createResponse.data;
-            setChats([...chats, createdChat]);
-            onSelectChat(createdChat);
+            setEditingChat(newChatTemplate);  // Open the ChatEditor with the new chat template
         } catch (error) {
-            console.error('Error creating chat:', error);
+            console.error('Error initializing new chat:', error);
         }
     };
 
@@ -54,8 +50,12 @@ function ChatList({ onSelectChat }) {
         }
     };
 
-    const handleSaveEdit = (updatedChat) => {
-        setChats(chats.map(chat => (chat.id === updatedChat.id ? updatedChat : chat)));
+    const handleSaveEdit = (savedChat) => {
+        if (editingChat.id == null) {
+            setChats([...chats, savedChat]);
+        } else {
+            setChats(chats.map(chat => (chat.id === savedChat.id ? savedChat : chat)));
+        }
         setEditingChat(null);
     };
 

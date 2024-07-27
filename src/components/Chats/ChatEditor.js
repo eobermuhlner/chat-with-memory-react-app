@@ -42,7 +42,7 @@ function ChatEditor({ chat, onClose, onSave }) {
     const handleSave = async () => {
         const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants, tools: selectedTools, documents: selectedDocuments };
         try {
-            if (chat.id === undefined) {
+            if (chat.id == null) {
                 const response = await axios.post('http://localhost:8092/chats', updatedChat);
                 onSave(response.data);
             } else {
@@ -88,7 +88,7 @@ function ChatEditor({ chat, onClose, onSave }) {
     return (
         <Modal show onHide={onClose} size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>{chat.id === undefined ? 'Create Chat' : 'Edit Chat'}</Modal.Title>
+                <Modal.Title>{chat.id == null ? 'Create Chat' : 'Edit Chat'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -180,7 +180,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                                     <Card key={document.id} className="mr-2 mb-2" style={{ width: 'auto' }}>
                                         <Card.Body className="d-flex justify-content-between align-items-center p-2">
                                             <div>{document.name}</div>
-                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveDocument(document)}>
+                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveDocument(document.id)}>
                                                 <FaTimes />
                                             </Button>
                                         </Card.Body>

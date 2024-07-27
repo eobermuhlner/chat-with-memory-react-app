@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form, Dropdown, DropdownButton, Card } from 'react-bootstrap';
 import { FaPlus, FaTimes } from 'react-icons/fa';
+import PropTypes from 'prop-types';
+
+const API_URL = 'http://localhost:8092';
 
 function AssistantEditor({ assistant, onClose, onSave }) {
     const [name, setName] = useState(assistant.name);
@@ -14,38 +17,36 @@ function AssistantEditor({ assistant, onClose, onSave }) {
     const [selectedDocuments, setSelectedDocuments] = useState(assistant.documents || []);
 
     useEffect(() => {
-        axios.get('http://localhost:8092/tools')
-            .then(response => {
-                setTools(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching tools:', error);
-            });
-
-        axios.get('http://localhost:8092/documents')
-            .then(response => {
-                setDocuments(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching documents:', error);
-            });
+        const fetchToolsAndDocuments = async () => {
+            try {
+                const [toolsResponse, documentsResponse] = await Promise.all([
+                    axios.get(`${API_URL}/tools`),
+                    axios.get(`${API_URL}/documents`)
+                ]);
+                setTools(toolsResponse.data);
+                setDocuments(documentsResponse.data);
+            } catch (error) {
+                console.error('Error fetching tools or documents:', error);
+                // Add user notification for error
+            }
+        };
+        fetchToolsAndDocuments();
     }, []);
 
     const handleSave = async () => {
         const updatedAssistant = { ...assistant, name, description, prompt, sortIndex, tools: selectedTools, documents: selectedDocuments };
         try {
-            if (assistant.id === undefined) {
-                // Create a new assistant
-                const response = await axios.post('http://localhost:8092/assistants', updatedAssistant);
+            if (assistant.id === null) {
+                const response = await axios.post(`${API_URL}/assistants`, updatedAssistant);
                 onSave(response.data);
             } else {
-                // Update an existing assistant
-                await axios.put(`http://localhost:8092/assistants/${assistant.id}`, updatedAssistant);
+                await axios.put(`${API_URL}/assistants/${assistant.id}`, updatedAssistant);
                 onSave(updatedAssistant);
             }
             onClose();
         } catch (error) {
             console.error('Error saving assistant:', error);
+            // Add user notification for error
         }
     };
 
@@ -72,7 +73,7 @@ function AssistantEditor({ assistant, onClose, onSave }) {
     return (
         <Modal show onHide={onClose} size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>{assistant.id === undefined ? 'Create Assistant' : 'Edit Assistant'}</Modal.Title>
+                <Modal.Title>{assistant.id === null ? 'Create Assistant' : 'Edit Assistant'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -181,5 +182,11 @@ function AssistantEditor({ assistant, onClose, onSave }) {
         </Modal>
     );
 }
+
+AssistantEditor.propTypes = {
+    assistant: PropTypes.object.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+};
 
 export default AssistantEditor;
