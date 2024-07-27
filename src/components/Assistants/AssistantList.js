@@ -37,7 +37,6 @@ function AssistantList() {
             const response = await axios.get(`${API_URL}/assistants/${assistant.id}`);
             setEditingAssistant(response.data);
         } catch (error) {
-            console.log('ERROR ' + error.message)
             showToast('Error fetching assistant: ' + error.message, 'error');
         }
     };
