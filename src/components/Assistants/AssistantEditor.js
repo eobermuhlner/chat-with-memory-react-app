@@ -127,7 +127,7 @@ function AssistantEditor({ assistant, onClose, onSave }) {
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
-                                title={<FaPlus />}
+                                title={<span><FaPlus /> Tool</span>}
                                 variant="primary"
                                 className="mr-2"
                             >
@@ -156,7 +156,7 @@ function AssistantEditor({ assistant, onClose, onSave }) {
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
-                                title={<FaPlus />}
+                                title={<span><FaPlus /> Document</span>}
                                 variant="primary"
                                 className="mr-2"
                             >

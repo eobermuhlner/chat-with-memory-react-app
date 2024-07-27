@@ -131,7 +131,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
-                                title={<FaPlus />}
+                                title={<span><FaPlus /> Assistant</span>}
                                 variant="primary"
                                 className="mr-2"
                             >
@@ -160,7 +160,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
-                                title={<FaPlus />}
+                                title={<span><FaPlus /> Tool</span>}
                                 variant="primary"
                                 className="mr-2"
                             >
@@ -189,7 +189,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
-                                title={<FaPlus />}
+                                title={<span><FaPlus /> Document</span>}
                                 variant="primary"
                                 className="mr-2"
                             >
