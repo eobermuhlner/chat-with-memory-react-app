@@ -34,6 +34,11 @@ function AssistantEditor({ assistant, onClose, onSave }) {
     }, []);
 
     const handleSave = async () => {
+        if (!name.trim()) {
+            showToast('Assistant must have a name', 'error');
+            return;
+        }
+
         const updatedAssistant = { ...assistant, name, description, prompt, sortIndex, tools: selectedTools, documents: selectedDocuments };
         try {
             if (assistant.id === null) {

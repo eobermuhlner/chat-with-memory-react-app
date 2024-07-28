@@ -41,6 +41,15 @@ function ChatEditor({ chat, onClose, onSave }) {
     }, []);
 
     const handleSave = async () => {
+        if (!title.trim()) {
+            showToast('Chat must have a name', 'error');
+            return;
+        }
+        if (selectedAssistants.length === 0) {
+            showToast('Chat must have at least one assistant', 'error');
+            return;
+        }
+
         const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants, tools: selectedTools, documents: selectedDocuments };
         try {
             if (chat.id == null) {

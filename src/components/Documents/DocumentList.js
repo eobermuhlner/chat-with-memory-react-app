@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ListGroup, Modal, Button, Form } from 'react-bootstrap';
+import { ListGroup, Modal, Button, Form, Spinner } from 'react-bootstrap';
 import DocumentItem from './DocumentItem';
 import ToastNotification, { showToast } from '../ToastNotification';
 
@@ -8,10 +8,11 @@ function DocumentList() {
     const [documents, setDocuments] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [file, setFile] = useState(null);
-    const [splitterStrategy, setSplitterStrategy] = useState('AI'); // Default value for splitter strategy
+    const [splitterStrategy, setSplitterStrategy] = useState('Paragraph');
     const [segments, setSegments] = useState([]);
     const [showSegmentsModal, setShowSegmentsModal] = useState(false);
     const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
+    const [isLoading, setIsLoading] = useState(false); // New loading state
 
     useEffect(() => {
         fetchDocuments();
@@ -51,7 +52,9 @@ function DocumentList() {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('splitter', splitterStrategy); // Append the selected splitter strategy
+        formData.append('splitter', splitterStrategy);
+
+        setIsLoading(true);
 
         try {
             await axios.post('http://localhost:8092/documents', formData, {
@@ -62,10 +65,12 @@ function DocumentList() {
             fetchDocuments();
             setShowUploadModal(false);
             setFile(null);
-            setSplitterStrategy('AI'); // Reset to default value
+            setSplitterStrategy('Paragraph');
             showToast('Document uploaded successfully', 'success');
         } catch (error) {
             showToast('Error uploading document: ' + error.message, 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -89,7 +94,7 @@ function DocumentList() {
 
     return (
         <div>
-            <ToastNotification /> {/* Add the ToastNotification component */}
+            <ToastNotification />
             <Button onClick={() => setShowUploadModal(true)} className="mb-3">Upload New Document</Button>
             <ListGroup>
                 {documents.map(document => (
@@ -125,11 +130,11 @@ function DocumentList() {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowUploadModal(false)}>
+                    <Button variant="secondary" onClick={() => setShowUploadModal(false)} disabled={isLoading}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleUpload}>
-                        Upload
+                    <Button variant="primary" onClick={handleUpload} disabled={isLoading}>
+                        {isLoading ? <Spinner animation="border" size="sm" /> : 'Upload'}
                     </Button>
                 </Modal.Footer>
             </Modal>

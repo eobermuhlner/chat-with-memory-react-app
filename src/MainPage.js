@@ -14,6 +14,10 @@ const MainPage = () => {
         setSelectedChat(chat);
     };
 
+    const handleSelectAssistant = (assistant) => {
+        // do nothing
+    };
+
     const handleBackToChatList = () => {
         setSelectedChat(null);
     };
@@ -45,8 +49,8 @@ const MainPage = () => {
                     <Row className="flex-grow-1 m-0">
                         <Col className="p-0">
                             {activeTab === 'chats' && <ChatList onSelectChat={handleSelectChat} />}
-                            {activeTab === 'assistants' && <AssistantList />}
-                            {activeTab === 'documents' && <DocumentList />} {/* New Tab Content */}
+                            {activeTab === 'assistants' && <AssistantList onSelectAssistant={handleSelectAssistant}/>}
+                            {activeTab === 'documents' && <DocumentList />}
                         </Col>
                     </Row>
                 </>
