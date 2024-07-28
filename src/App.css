@@ -110,3 +110,15 @@
     padding: 10px;
     background-color: #f7f7f7;
 }
+
+.custom-badge {
+    background-color: #f8f9fa; /* Light background */
+    border: 1px solid #ced4da; /* Border color */
+    color: #6c757d; /* Text color */
+    border-radius: 20px; /* Rounded corners */
+    padding: 0.5rem 1rem; /* Padding */
+    display: flex;
+    align-items: center;
+    height: 2.5rem;
+}
+

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, Button, Form, Dropdown, DropdownButton, Card } from 'react-bootstrap';
+import { Modal, Button, Form, Dropdown, DropdownButton, Badge } from 'react-bootstrap';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import ToastNotification, { showToast } from '../ToastNotification';
 
@@ -93,13 +93,13 @@ function ChatEditor({ chat, onClose, onSave }) {
         }
     };
 
-    const handleRemoveDocument = (document) => {
-        setSelectedDocuments(selectedDocuments.filter(d => d.id !== document.id));
+    const handleRemoveDocument = (documentId) => {
+        setSelectedDocuments(selectedDocuments.filter(d => d.id !== documentId));
     };
 
     return (
         <Modal show onHide={onClose} size="lg">
-            <ToastNotification /> {/* Add the ToastNotification component */}
+            <ToastNotification />
             <Modal.Header closeButton>
                 <Modal.Title>{chat.id == null ? 'Create Chat' : 'Edit Chat'}</Modal.Title>
             </Modal.Header>
@@ -127,26 +127,20 @@ function ChatEditor({ chat, onClose, onSave }) {
                         <div className="d-flex align-items-center">
                             <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
                                 {selectedAssistants.map(assistant => (
-                                    <Card key={assistant.id} className="mr-2 mb-2" style={{ width: 'auto' }}>
-                                        <Card.Body className="d-flex justify-content-between align-items-center p-2">
-                                            <div>
-                                                <div>{assistant.name}</div>
-                                                <div className="text-muted" style={{ fontSize: '0.8rem' }}>
-                                                    {assistant.description}
-                                                </div>
-                                            </div>
-                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveAssistant(assistant.id)}>
-                                                <FaTimes />
-                                            </Button>
-                                        </Card.Body>
-                                    </Card>
+                                    <Badge bg="light" key={assistant.id} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
+                                        <div className="d-flex flex-column align-items-start">
+                                            <span>{assistant.name}</span>
+                                            <small className="text-muted">{assistant.description}</small>
+                                        </div>
+                                        <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => handleRemoveAssistant(assistant.id)} />
+                                    </Badge>
                                 ))}
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
                                 title={<span><FaPlus /> Assistant</span>}
                                 variant="primary"
-                                className="mr-2"
+                                className="ml-2"
                             >
                                 {assistants.map(assistant => (
                                     <Dropdown.Item key={assistant.id} onClick={() => handleSelectAssistant(assistant)}>
@@ -161,21 +155,17 @@ function ChatEditor({ chat, onClose, onSave }) {
                         <div className="d-flex align-items-center">
                             <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
                                 {selectedTools.map(tool => (
-                                    <Card key={tool} className="mr-2 mb-2" style={{ width: 'auto' }}>
-                                        <Card.Body className="d-flex justify-content-between align-items-center p-2">
-                                            <div>{tool}</div>
-                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveTool(tool)}>
-                                                <FaTimes />
-                                            </Button>
-                                        </Card.Body>
-                                    </Card>
+                                    <Badge bg="light" key={tool} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
+                                        {tool}
+                                        <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => handleRemoveTool(tool)} />
+                                    </Badge>
                                 ))}
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
                                 title={<span><FaPlus /> Tool</span>}
                                 variant="primary"
-                                className="mr-2"
+                                className="ml-2"
                             >
                                 {tools.map(tool => (
                                     <Dropdown.Item key={tool} onClick={() => handleSelectTool(tool)}>
@@ -190,21 +180,17 @@ function ChatEditor({ chat, onClose, onSave }) {
                         <div className="d-flex align-items-center">
                             <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
                                 {selectedDocuments.map(document => (
-                                    <Card key={document.id} className="mr-2 mb-2" style={{ width: 'auto' }}>
-                                        <Card.Body className="d-flex justify-content-between align-items-center p-2">
-                                            <div>{document.name}</div>
-                                            <Button variant="outline-danger" size="sm" onClick={() => handleRemoveDocument(document.id)}>
-                                                <FaTimes />
-                                            </Button>
-                                        </Card.Body>
-                                    </Card>
+                                    <Badge bg="light" key={document.id} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
+                                        {document.name}
+                                        <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => handleRemoveDocument(document.id)} />
+                                    </Badge>
                                 ))}
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
                                 title={<span><FaPlus /> Document</span>}
                                 variant="primary"
-                                className="mr-2"
+                                className="ml-2"
                             >
                                 {documents.map(document => (
                                     <Dropdown.Item key={document.id} onClick={() => handleSelectDocument(document)}>
