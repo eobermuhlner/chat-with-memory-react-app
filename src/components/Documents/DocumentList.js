@@ -13,6 +13,7 @@ function DocumentList() {
     const [showSegmentsModal, setShowSegmentsModal] = useState(false);
     const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(false); // New loading state
+    const [documentToDelete, setDocumentToDelete] = useState(null); // State for document to delete
 
     useEffect(() => {
         fetchDocuments();
@@ -79,9 +80,18 @@ function DocumentList() {
             await axios.delete(`http://localhost:8092/documents/${documentId}`);
             setDocuments(documents.filter(document => document.id !== documentId));
             showToast('Document deleted successfully', 'success');
+            setDocumentToDelete(null);
         } catch (error) {
             showToast('Error deleting document: ' + error.message, 'error');
         }
+    };
+
+    const confirmDeleteDocument = (documentId) => {
+        setDocumentToDelete(documentId);
+    };
+
+    const handleCancelDelete = () => {
+        setDocumentToDelete(null);
     };
 
     const handleNextSegment = () => {
@@ -101,7 +111,7 @@ function DocumentList() {
                     <DocumentItem
                         key={document.id}
                         document={document}
-                        onDelete={() => handleDeleteDocument(document.id)}
+                        onDelete={() => confirmDeleteDocument(document.id)}
                         onViewSegments={() => fetchSegments(document.id)}
                     />
                 ))}
@@ -160,6 +170,23 @@ function DocumentList() {
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowSegmentsModal(false)}>
                         Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={!!documentToDelete} onHide={handleCancelDelete}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this document?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCancelDelete}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDeleteDocument(documentToDelete)}>
+                        Delete
                     </Button>
                 </Modal.Footer>
             </Modal>

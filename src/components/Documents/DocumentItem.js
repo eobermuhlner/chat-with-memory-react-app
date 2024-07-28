@@ -10,7 +10,7 @@ function DocumentItem({ document, onDelete, onViewSegments }) {
                     <p>{document.size} bytes</p>
                 </div>
                 <div>
-                    <Button variant="primary" onClick={onViewSegments}>View Segments</Button>
+                    <Button variant="primary" className="me-2" onClick={onViewSegments}>View Segments</Button>
                     <Button variant="danger" onClick={onDelete}>Delete</Button>
                 </div>
             </div>
