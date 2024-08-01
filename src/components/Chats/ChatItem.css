@@ -1,0 +1,54 @@
+/* ChatItem.css */
+.chat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-item-table, .chat-item-card {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .chat-item-table {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .chat-item-badges-container {
+        display: flex;
+        justify-content: flex-start;
+    }
+    .chat-item-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}
+
+@media (max-width: 767px) {
+    .chat-item-card {
+        display: block;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+    .chat-item-buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }
+    .chat-item-badges-container {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+    }
+    .chat-item-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}

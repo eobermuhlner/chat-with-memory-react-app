@@ -5,6 +5,7 @@ import ChatItem from './ChatItem';
 import ChatEditor from './ChatEditor';
 import ChatControls from './ChatControls';
 import ToastNotification, { showToast } from '../ToastNotification';
+import './ChatList.css';
 
 function ChatList({ onSelectChat }) {
     const [chats, setChats] = useState([]);
@@ -12,21 +13,15 @@ function ChatList({ onSelectChat }) {
     const [chatToDelete, setChatToDelete] = useState(null);
 
     useEffect(() => {
-        // Fetch chats from the REST endpoint
         api.get('/chats')
-            .then(response => {
-                setChats(response.data);
-            })
-            .catch(error => {
-                showToast('Error fetching chats: ' + error.message, 'error');
-            });
+            .then(response => setChats(response.data))
+            .catch(error => showToast('Error fetching chats: ' + error.message, 'error'));
     }, []);
 
     const handleCreateChat = async () => {
         try {
             const response = await api.get('/chats/new');
-            const newChatTemplate = response.data;
-            setEditingChat(newChatTemplate);  // Open the ChatEditor with the new chat template
+            setEditingChat(response.data);
         } catch (error) {
             showToast('Error initializing new chat: ' + error.message, 'error');
         }
@@ -53,52 +48,39 @@ function ChatList({ onSelectChat }) {
     };
 
     const handleSaveEdit = (savedChat) => {
-        if (editingChat.id == null) {
-            setChats([...chats, savedChat]);
-        } else {
-            setChats(chats.map(chat => (chat.id === savedChat.id ? savedChat : chat)));
-        }
+        setChats(chats.map(chat => (chat.id === savedChat.id ? savedChat : chat)));
         setEditingChat(null);
         showToast('Chat saved successfully', 'success');
-    };
-
-    const confirmDeleteChat = (chatId) => {
-        setChatToDelete(chatId);
-    };
-
-    const handleCancelDelete = () => {
-        setChatToDelete(null);
     };
 
     return (
         <div>
             <ToastNotification />
             <ChatControls onCreateChat={handleCreateChat} />
-            <ListGroup>
-                {chats.map(chat => (
-                    <ChatItem
-                        key={chat.id}
-                        chat={chat}
-                        onSelect={() => onSelectChat(chat)}
-                        onEdit={() => handleEditChat(chat)}
-                        onDelete={() => confirmDeleteChat(chat.id)}
-                    />
-                ))}
-            </ListGroup>
-            {editingChat && <ChatEditor chat={editingChat} onClose={() => setEditingChat(null)} onSave={handleSaveEdit} />}
-
-            <Modal show={!!chatToDelete} onHide={handleCancelDelete}>
+            <div className="chat-list-container">
+                <ListGroup>
+                    {chats.map(chat => (
+                        <ChatItem
+                            key={chat.id}
+                            chat={chat}
+                            onSelect={() => onSelectChat(chat)}
+                            onEdit={() => handleEditChat(chat)}
+                            onDelete={() => setChatToDelete(chat.id)}
+                        />
+                    ))}
+                </ListGroup>
+            </div>
+            {editingChat && (
+                <ChatEditor chat={editingChat} onClose={() => setEditingChat(null)} onSave={handleSaveEdit} />
+            )}
+            <Modal show={!!chatToDelete} onHide={() => setChatToDelete(null)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Are you sure you want to delete this chat?</Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCancelDelete}>
-                        Cancel
-                    </Button>
-                    <Button variant="danger" onClick={() => handleDeleteChat(chatToDelete)}>
-                        Delete
-                    </Button>
+                    <Button variant="secondary" onClick={() => setChatToDelete(null)}>Cancel</Button>
+                    <Button variant="danger" onClick={() => handleDeleteChat(chatToDelete)}>Delete</Button>
                 </Modal.Footer>
             </Modal>
         </div>
