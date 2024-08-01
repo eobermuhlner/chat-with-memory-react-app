@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ListGroup, Modal, Button, Form } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Button, Form, ListGroup, Modal} from 'react-bootstrap';
 import AssistantItem from './AssistantItem';
 import AssistantEditor from './AssistantEditor';
 import PropTypes from 'prop-types';
-import ToastNotification, { showToast } from '../ToastNotification';
-
-const API_URL = 'http://localhost:8092';
+import api from '../../api';
+import ToastNotification, {showToast} from '../ToastNotification';
 
 function AssistantList() {
     const [assistants, setAssistants] = useState([]);
@@ -20,7 +18,7 @@ function AssistantList() {
 
     const fetchAssistants = async () => {
         try {
-            const response = await axios.get(`${API_URL}/assistants`);
+            const response = await api.get('/assistants');
             setAssistants(response.data);
         } catch (error) {
             showToast('Error fetching assistants: ' + error.message, 'error');
@@ -34,7 +32,7 @@ function AssistantList() {
 
     const handleEditAssistant = async (assistant) => {
         try {
-            const response = await axios.get(`${API_URL}/assistants/${assistant.id}`);
+            const response = await api.get(`/assistants/${assistant.id}`);
             setEditingAssistant(response.data);
         } catch (error) {
             showToast('Error fetching assistant: ' + error.message, 'error');
@@ -43,7 +41,7 @@ function AssistantList() {
 
     const handleDeleteAssistant = async (assistantId) => {
         try {
-            await axios.delete(`${API_URL}/assistants/${assistantId}`, { params: { deleteMessages } });
+            await api.delete(`/assistants/${assistantId}`, { params: { deleteMessages } });
             setAssistants(prevAssistants => prevAssistants.filter(assistant => assistant.id !== assistantId));
             setAssistantToDelete(null);
             setDeleteMessages(false);

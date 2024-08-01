@@ -1,11 +1,11 @@
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8081';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8092';
 
 const config = {
     backend: {
         url: BACKEND_URL
     },
     api: {
-        baseURL: `${BACKEND_URL}/api`
+        baseURL: `${BACKEND_URL}`
     },
     i18n: {
         fallbackLng: process.env.REACT_APP_I18N_FALLBACK_LNG || 'en',

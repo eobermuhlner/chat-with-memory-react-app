@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { ListGroup, Modal, Button } from 'react-bootstrap';
 import ChatListItem from './ChatListItem';
 import ChatEditor from './ChatEditor';
@@ -13,7 +13,7 @@ function ChatList({ onSelectChat }) {
 
     useEffect(() => {
         // Fetch chats from the REST endpoint
-        axios.get('http://localhost:8092/chats')
+        api.get('/chats')
             .then(response => {
                 setChats(response.data);
             })
@@ -24,7 +24,7 @@ function ChatList({ onSelectChat }) {
 
     const handleCreateChat = async () => {
         try {
-            const response = await axios.get('http://localhost:8092/chats/new');
+            const response = await api.get('/chats/new');
             const newChatTemplate = response.data;
             setEditingChat(newChatTemplate);  // Open the ChatEditor with the new chat template
         } catch (error) {
@@ -34,7 +34,7 @@ function ChatList({ onSelectChat }) {
 
     const handleEditChat = async (chat) => {
         try {
-            const response = await axios.get(`http://localhost:8092/chats/${chat.id}`);
+            const response = await api.get(`/chats/${chat.id}`);
             setEditingChat(response.data);
         } catch (error) {
             showToast('Error fetching chat: ' + error.message, 'error');
@@ -43,7 +43,7 @@ function ChatList({ onSelectChat }) {
 
     const handleDeleteChat = async (chatId) => {
         try {
-            await axios.delete(`http://localhost:8092/chats/${chatId}`);
+            await api.delete(`/chats/${chatId}`);
             setChats(chats.filter(chat => chat.id !== chatId));
             setChatToDelete(null);
             showToast('Chat deleted successfully', 'success');

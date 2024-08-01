@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { ListGroup, Modal, Button, Form, Spinner } from 'react-bootstrap';
 import DocumentItem from './DocumentItem';
 import ToastNotification, { showToast } from '../ToastNotification';
@@ -20,7 +20,7 @@ function DocumentList() {
     }, []);
 
     const fetchDocuments = () => {
-        axios.get('http://localhost:8092/documents')
+        api.get('/documents')
             .then(response => {
                 setDocuments(response.data);
             })
@@ -30,7 +30,7 @@ function DocumentList() {
     };
 
     const fetchSegments = (documentId) => {
-        axios.get(`http://localhost:8092/documents/${documentId}/segments`)
+        api.get(`/documents/${documentId}/segments`)
             .then(response => {
                 setSegments(response.data);
                 setCurrentSegmentIndex(0);
@@ -58,7 +58,7 @@ function DocumentList() {
         setIsLoading(true);
 
         try {
-            await axios.post('http://localhost:8092/documents', formData, {
+            await api.post('/documents', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -77,7 +77,7 @@ function DocumentList() {
 
     const handleDeleteDocument = async (documentId) => {
         try {
-            await axios.delete(`http://localhost:8092/documents/${documentId}`);
+            await api.delete(`/documents/${documentId}`);
             setDocuments(documents.filter(document => document.id !== documentId));
             showToast('Document deleted successfully', 'success');
             setDocumentToDelete(null);

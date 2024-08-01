@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { debounce } from 'lodash';
 import { Button, Container, Row, Col, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { VariableSizeList as List } from 'react-window';
@@ -30,7 +30,7 @@ const ChatThread = ({ chat, onBack }) => {
         setMessage('');
 
         try {
-            const res = await axios.post(`http://localhost:8092/chats/${chat.id}/messages`, { message });
+            const res = await api.post(`/chats/${chat.id}/messages`, { message });
             const assistantMessages = res.data.messages.map(msg => ({
                 sender: msg.sender,
                 text: msg.text,
@@ -50,11 +50,11 @@ const ChatThread = ({ chat, onBack }) => {
     useEffect(() => {
         const fetchChatDetails = async () => {
             try {
-                const chatResponse = await axios.get(`http://localhost:8092/chats/${chat.id}`);
+                const chatResponse = await api.get(`/chats/${chat.id}`);
                 const chatData = chatResponse.data;
                 setTitle(chatData.title);
 
-                const messagesResponse = await axios.get(`http://localhost:8092/chats/${chat.id}/messages`);
+                const messagesResponse = await api.get(`/chats/${chat.id}/messages`);
                 const messages = messagesResponse.data.map(msg => ({
                     sender: msg.sender || 'User',
                     text: msg.text,
@@ -85,7 +85,7 @@ const ChatThread = ({ chat, onBack }) => {
 
     const handleDeleteMessages = useCallback(async () => {
         try {
-            await axios.delete(`http://localhost:8092/chats/${chat.id}/messages`, {
+            await api.delete(`/chats/${chat.id}/messages`, {
                 params: {
                     transferToLongTermMemory: transferToLongTerm
                 }
@@ -101,7 +101,7 @@ const ChatThread = ({ chat, onBack }) => {
 
     const handleDeleteLongTermMemory = useCallback(async () => {
         try {
-            await axios.delete(`http://localhost:8092/chats/${chat.id}/messages/long-term`);
+            await api.delete(`/chats/${chat.id}/messages/long-term`);
             showToast('Long-term memory deleted successfully', 'success');
         } catch (error) {
             showToast('Error deleting long-term memory: ' + error.message, 'error');
@@ -112,7 +112,7 @@ const ChatThread = ({ chat, onBack }) => {
 
     const handleTransferToLongTerm = useCallback(async () => {
         try {
-            await axios.post(`http://localhost:8092/chats/${chat.id}/messages/transfer-to-long-term`);
+            await api.post(`/chats/${chat.id}/messages/transfer-to-long-term`);
             showToast('Messages transferred to long-term memory successfully', 'success');
         } catch (error) {
             showToast('Error transferring messages to long-term memory: ' + error.message, 'error');

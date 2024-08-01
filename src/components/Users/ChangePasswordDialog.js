@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import ToastNotification, { showToast } from '../ToastNotification';
-import axios from 'axios';
+import api from '../../api';
 import PropTypes from 'prop-types';
-
-const API_URL = 'http://localhost:8092';
 
 function ChangePasswordDialog({ userId, onClose }) {
     const [oldPassword, setOldPassword] = useState('');
@@ -18,7 +16,7 @@ function ChangePasswordDialog({ userId, onClose }) {
         }
 
         try {
-            const response = await axios.put(`${API_URL}/users/${userId}/password`, { oldPassword, newPassword });
+            const response = await api.put(`/users/${userId}/password`, { oldPassword, newPassword });
             if (response.status === 200) {
                 showToast('Password updated successfully', 'success');
                 onClose();

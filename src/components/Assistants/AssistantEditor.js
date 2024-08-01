@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { Modal, Button, Form, Dropdown, DropdownButton, Card, ListGroup, Badge } from 'react-bootstrap';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import ToastNotification, { showToast } from '../ToastNotification';
-
-const API_URL = 'http://localhost:8092';
 
 function AssistantEditor({ assistant, onClose, onSave }) {
     const [name, setName] = useState(assistant.name);
@@ -21,8 +19,8 @@ function AssistantEditor({ assistant, onClose, onSave }) {
         const fetchToolsAndDocuments = async () => {
             try {
                 const [toolsResponse, documentsResponse] = await Promise.all([
-                    axios.get(`${API_URL}/tools`),
-                    axios.get(`${API_URL}/documents`)
+                    api.get(`/tools`),
+                    api.get(`/documents`)
                 ]);
                 setTools(toolsResponse.data);
                 setDocuments(documentsResponse.data);
@@ -42,11 +40,11 @@ function AssistantEditor({ assistant, onClose, onSave }) {
         const updatedAssistant = { ...assistant, name, description, prompt, sortIndex, tools: selectedTools, documents: selectedDocuments };
         try {
             if (assistant.id === null) {
-                const response = await axios.post(`${API_URL}/assistants`, updatedAssistant);
+                const response = await api.post(`/assistants`, updatedAssistant);
                 onSave(response.data);
                 showToast('Assistant created successfully', 'success');
             } else {
-                await axios.put(`${API_URL}/assistants/${assistant.id}`, updatedAssistant);
+                await api.put(`/assistants/${assistant.id}`, updatedAssistant);
                 onSave(updatedAssistant);
                 showToast('Assistant updated successfully', 'success');
             }

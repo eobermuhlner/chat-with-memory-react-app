@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { ListGroup, Modal, Button, Form } from 'react-bootstrap';
 import UserItem from './UserItem';
 import UserEditor from './UserEditor';
 import ToastNotification, { showToast } from '../ToastNotification';
-
-const API_URL = 'http://localhost:8092';
 
 function UserList() {
     const [users, setUsers] = useState([]);
@@ -18,7 +16,7 @@ function UserList() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get(`${API_URL}/users`);
+            const response = await api.get(`/users`);
             setUsers(response.data);
         } catch (error) {
             showToast('Error fetching users: ' + error.message, 'error');
@@ -32,7 +30,7 @@ function UserList() {
 
     const handleEditUser = async (user) => {
         try {
-            const response = await axios.get(`${API_URL}/users/${user.id}`);
+            const response = await api.get(`/users/${user.id}`);
             setEditingUser(response.data);
         } catch (error) {
             showToast('Error fetching user: ' + error.message, 'error');
@@ -41,7 +39,7 @@ function UserList() {
 
     const handleDeleteUser = async (userId) => {
         try {
-            await axios.delete(`${API_URL}/users/${userId}`);
+            await api.delete(`/users/${userId}`);
             setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
             setUserToDelete(null);
             showToast('User deleted successfully', 'success');

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Nav } from 'react-bootstrap';
+import { Container, Row, Col, Nav, Button } from 'react-bootstrap'; // Import Button
 import ChatList from './components/Chats/ChatList';
 import AssistantList from './components/Assistants/AssistantList';
 import ChatThread from './components/Chats/ChatThread';
 import DocumentList from './components/Documents/DocumentList';
 import UserList from './components/Users/UserList'; // Import the UserList component
 
-const MainPage = () => {
+const MainPage = ({ loginRequired, onLogout }) => { // Accept onLogout prop
     const [activeTab, setActiveTab] = useState('chats');
     const [selectedChat, setSelectedChat] = useState(null);
 
@@ -48,11 +48,16 @@ const MainPage = () => {
                                 </Nav.Item>
                             </Nav>
                         </Col>
+                        <Col className="p-0" xs="auto">
+                            {loginRequired && (
+                                <Button variant="outline-danger" onClick={onLogout}>Logout</Button>
+                            )}
+                        </Col>
                     </Row>
                     <Row className="flex-grow-1 m-0">
                         <Col className="p-0">
                             {activeTab === 'chats' && <ChatList onSelectChat={handleSelectChat} />}
-                            {activeTab === 'assistants' && <AssistantList onSelectAssistant={handleSelectAssistant}/>}
+                            {activeTab === 'assistants' && <AssistantList onSelectAssistant={handleSelectAssistant} />}
                             {activeTab === 'documents' && <DocumentList />}
                             {activeTab === 'users' && <UserList />}
                         </Col>

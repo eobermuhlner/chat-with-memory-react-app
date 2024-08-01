@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { Modal, Button, Form, Dropdown, DropdownButton, Badge } from 'react-bootstrap';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import ToastNotification, { showToast } from '../ToastNotification';
@@ -15,7 +15,7 @@ function ChatEditor({ chat, onClose, onSave }) {
     const [selectedDocuments, setSelectedDocuments] = useState(chat.documents || []);
 
     useEffect(() => {
-        axios.get('http://localhost:8092/assistants')
+        api.get('/assistants')
             .then(response => {
                 setAssistants(response.data);
             })
@@ -23,7 +23,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                 showToast('Error fetching assistants: ' + error.message, 'error');
             });
 
-        axios.get('http://localhost:8092/tools')
+        api.get('/tools')
             .then(response => {
                 setTools(response.data);
             })
@@ -31,7 +31,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                 showToast('Error fetching tools: ' + error.message, 'error');
             });
 
-        axios.get('http://localhost:8092/documents')
+        api.get('/documents')
             .then(response => {
                 setDocuments(response.data);
             })
@@ -53,11 +53,11 @@ function ChatEditor({ chat, onClose, onSave }) {
         const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants, tools: selectedTools, documents: selectedDocuments };
         try {
             if (chat.id == null) {
-                const response = await axios.post('http://localhost:8092/chats', updatedChat);
+                const response = await api.post('/chats', updatedChat);
                 onSave(response.data);
                 showToast('Chat created successfully', 'success');
             } else {
-                await axios.put(`http://localhost:8092/chats/${chat.id}`, updatedChat);
+                await api.put(`/chats/${chat.id}`, updatedChat);
                 onSave(updatedChat);
                 showToast('Chat updated successfully', 'success');
             }

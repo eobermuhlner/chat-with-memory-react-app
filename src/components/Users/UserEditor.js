@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import ToastNotification, { showToast } from '../ToastNotification';
-import axios from 'axios';
+import api from '../../api';
 import PropTypes from 'prop-types';
 import ChangePasswordDialog from './ChangePasswordDialog'; // Import the ChangePasswordDialog component
-
-const API_URL = 'http://localhost:8092';
 
 function UserEditor({ user, onClose, onSave }) {
     const [username, setUsername] = useState(user.username);
@@ -27,11 +25,11 @@ function UserEditor({ user, onClose, onSave }) {
         const updatedUser = { ...user, username, password: password || user.password };
         try {
             if (user.id === null) {
-                const response = await axios.post(`${API_URL}/users`, updatedUser);
+                const response = await api.post(`/users`, updatedUser);
                 onSave(response.data);
                 showToast('User created successfully', 'success');
             } else {
-                await axios.put(`${API_URL}/users/${user.id}`, updatedUser);
+                await api.put(`/users/${user.id}`, updatedUser);
                 onSave(updatedUser);
                 showToast('User updated successfully', 'success');
             }
