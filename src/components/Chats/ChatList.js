@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
 import { ListGroup, Modal, Button } from 'react-bootstrap';
-import ChatListItem from './ChatListItem';
+import ChatItem from './ChatItem';
 import ChatEditor from './ChatEditor';
 import ChatControls from './ChatControls';
 import ToastNotification, { showToast } from '../ToastNotification';
@@ -76,7 +76,7 @@ function ChatList({ onSelectChat }) {
             <ChatControls onCreateChat={handleCreateChat} />
             <ListGroup>
                 {chats.map(chat => (
-                    <ChatListItem
+                    <ChatItem
                         key={chat.id}
                         chat={chat}
                         onSelect={() => onSelectChat(chat)}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
 
-function ChatListItem({ chat, onSelect, onEdit, onDelete }) {
+function ChatItem({ chat, onSelect, onEdit, onDelete }) {
     return (
         <ListGroup.Item>
             <div className="d-flex justify-content-between align-items-center">
@@ -17,4 +17,4 @@ function ChatListItem({ chat, onSelect, onEdit, onDelete }) {
     );
 }
 
-export default ChatListItem;
+export default ChatItem;
