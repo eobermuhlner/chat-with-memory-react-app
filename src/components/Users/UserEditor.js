@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form, Dropdown, DropdownButton, Badge } from 'react-bootstrap';
 import ToastNotification, { showToast } from '../ToastNotification';
 import api from '../../api';
 import PropTypes from 'prop-types';
 import ChangePasswordDialog from './ChangePasswordDialog'; // Import the ChangePasswordDialog component
+import { FaPlus, FaTimes } from 'react-icons/fa';
 
 function UserEditor({ user, onClose, onSave }) {
     const [username, setUsername] = useState(user.username);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
+    const [roles, setRoles] = useState(user.roles || []);
+    const [availableRoles, setAvailableRoles] = useState([]);
+
+    useEffect(() => {
+        const fetchRoles = async () => {
+            try {
+                const response = await api.get('/roles'); // Adjust the endpoint as necessary
+                setAvailableRoles(response.data);
+            } catch (error) {
+                showToast('Error fetching roles: ' + error.message, 'error');
+            }
+        };
+        fetchRoles();
+    }, []);
 
     const handleSave = async () => {
         if (!username.trim()) {
@@ -22,7 +37,7 @@ function UserEditor({ user, onClose, onSave }) {
             return;
         }
 
-        const updatedUser = { ...user, username, password: password || user.password };
+        const updatedUser = { ...user, username, password: password || user.password, roles };
         try {
             if (user.id === null) {
                 const response = await api.post(`/users`, updatedUser);
@@ -37,6 +52,16 @@ function UserEditor({ user, onClose, onSave }) {
         } catch (error) {
             showToast('Error saving user: ' + error.message, 'error');
         }
+    };
+
+    const handleSelectRole = (role) => {
+        if (!roles.includes(role)) {
+            setRoles([...roles, role]);
+        }
+    };
+
+    const handleRemoveRole = (role) => {
+        setRoles(roles.filter(r => r !== role));
     };
 
     return (
@@ -76,6 +101,31 @@ function UserEditor({ user, onClose, onSave }) {
                                 </Form.Group>
                             </>
                         )}
+                        <Form.Group>
+                            <Form.Label>Roles</Form.Label>
+                            <div className="d-flex align-items-center">
+                                <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
+                                    {roles.map(role => (
+                                        <Badge bg="light" key={role} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
+                                            {role}
+                                            <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => handleRemoveRole(role)} />
+                                        </Badge>
+                                    ))}
+                                </div>
+                                <DropdownButton
+                                    id="dropdown-basic-button"
+                                    title={<span><FaPlus /> Role</span>}
+                                    variant="primary"
+                                    className="ml-2"
+                                >
+                                    {availableRoles.map(role => (
+                                        <Dropdown.Item key={role} onClick={() => handleSelectRole(role)}>
+                                            {role}
+                                        </Dropdown.Item>
+                                    ))}
+                                </DropdownButton>
+                            </div>
+                        </Form.Group>
                     </Form>
                     {user.id !== null && (
                         <Button
