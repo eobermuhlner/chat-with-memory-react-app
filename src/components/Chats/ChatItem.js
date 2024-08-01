@@ -6,7 +6,7 @@ function ChatItem({ chat, onSelect, onEdit, onDelete }) {
         <ListGroup.Item>
             <div className="d-flex justify-content-between align-items-center">
                 <div onClick={onSelect} style={{ cursor: 'pointer' }}>
-                    {chat.title}
+                    <strong>{chat.title}</strong>
                 </div>
                 <div>
                     <Button variant="secondary" onClick={onEdit} className="me-2">Edit</Button>
