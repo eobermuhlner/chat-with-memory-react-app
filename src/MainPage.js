@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Nav, Button } from 'react-bootstrap'; // Import Button
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Nav, Button } from 'react-bootstrap';
+import { jwtDecode}  from 'jwt-decode';
 import ChatList from './components/Chats/ChatList';
 import AssistantList from './components/Assistants/AssistantList';
 import ChatThread from './components/Chats/ChatThread';
 import DocumentList from './components/Documents/DocumentList';
-import UserList from './components/Users/UserList'; // Import the UserList component
+import UserList from './components/Users/UserList';
 
-const MainPage = ({ loginRequired, onLogout }) => { // Accept onLogout prop
+const MainPage = ({ loginRequired, onLogout }) => {
     const [activeTab, setActiveTab] = useState('chats');
     const [selectedChat, setSelectedChat] = useState(null);
+    const [roles, setRoles] = useState([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setRoles(decodedToken.roles || []);
+        }
+    }, []);
 
     const handleSelectChat = (chat) => {
         setSelectedChat(chat);
-    };
-
-    const handleSelectAssistant = (assistant) => {
-        // do nothing
     };
 
     const handleBackToChatList = () => {
@@ -41,11 +47,13 @@ const MainPage = ({ loginRequired, onLogout }) => { // Accept onLogout prop
                                     <Nav.Link eventKey="assistants">Assistants</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
-                                    <Nav.Link eventKey="documents">Documents</Nav.Link> {/* Document Tab */}
+                                    <Nav.Link eventKey="documents">Documents</Nav.Link>
                                 </Nav.Item>
-                                <Nav.Item>
-                                    <Nav.Link eventKey="users">Users</Nav.Link> {/* New Users Tab */}
-                                </Nav.Item>
+                                {roles.includes('ROLE_ADMIN') && (
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="users">Users</Nav.Link>
+                                    </Nav.Item>
+                                )}
                             </Nav>
                         </Col>
                         <Col className="p-0" xs="auto">
@@ -57,9 +65,9 @@ const MainPage = ({ loginRequired, onLogout }) => { // Accept onLogout prop
                     <Row className="flex-grow-1 m-0">
                         <Col className="p-0">
                             {activeTab === 'chats' && <ChatList onSelectChat={handleSelectChat} />}
-                            {activeTab === 'assistants' && <AssistantList onSelectAssistant={handleSelectAssistant} />}
+                            {activeTab === 'assistants' && <AssistantList onSelectAssistant={() => {}} />}
                             {activeTab === 'documents' && <DocumentList />}
-                            {activeTab === 'users' && <UserList />}
+                            {activeTab === 'users' && roles.includes('ROLE_ADMIN') && <UserList />}
                         </Col>
                     </Row>
                 </>
