@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
 import { Modal, Button, Form, Dropdown, DropdownButton, Badge } from 'react-bootstrap';
-import { FaPlus, FaTimes } from 'react-icons/fa';
+import { FaTools, FaUser, FaFile, FaPlus, FaTimes } from 'react-icons/fa';
 import ToastNotification, { showToast } from '../ToastNotification';
 
 function ChatEditor({ chat, onClose, onSave }) {
@@ -97,6 +97,16 @@ function ChatEditor({ chat, onClose, onSave }) {
         setSelectedDocuments(selectedDocuments.filter(d => d.id !== documentId));
     };
 
+    const renderBadges = (items, Icon, onRemove) => (
+        items.map(item => (
+            <Badge bg="light" key={item.id || item} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
+                <Icon className="me-2" />
+                {item.name || item}
+                <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => onRemove(item.id || item)} />
+            </Badge>
+        ))
+    );
+
     return (
         <Modal show onHide={onClose} size="lg">
             <ToastNotification />
@@ -126,15 +136,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                         <Form.Label>Assistants</Form.Label>
                         <div className="d-flex align-items-center">
                             <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
-                                {selectedAssistants.map(assistant => (
-                                    <Badge bg="light" key={assistant.id} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
-                                        <div className="d-flex flex-column align-items-start">
-                                            <span>{assistant.name}</span>
-                                            <small className="text-muted">{assistant.description}</small>
-                                        </div>
-                                        <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => handleRemoveAssistant(assistant.id)} />
-                                    </Badge>
-                                ))}
+                                {renderBadges(selectedAssistants, FaUser, handleRemoveAssistant)}
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
@@ -154,12 +156,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                         <Form.Label>Tools</Form.Label>
                         <div className="d-flex align-items-center">
                             <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
-                                {selectedTools.map(tool => (
-                                    <Badge bg="light" key={tool} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
-                                        {tool}
-                                        <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => handleRemoveTool(tool)} />
-                                    </Badge>
-                                ))}
+                                {renderBadges(selectedTools, FaTools, handleRemoveTool)}
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"
@@ -179,12 +176,7 @@ function ChatEditor({ chat, onClose, onSave }) {
                         <Form.Label>Documents</Form.Label>
                         <div className="d-flex align-items-center">
                             <div className="d-flex flex-wrap align-items-center overflow-auto" style={{ maxHeight: '200px', flex: 1 }}>
-                                {selectedDocuments.map(document => (
-                                    <Badge bg="light" key={document.id} className="mr-2 mb-2 d-flex align-items-center custom-badge" style={{ height: '2.5rem' }}>
-                                        {document.name}
-                                        <FaTimes className="ml-1 text-danger" style={{ cursor: 'pointer' }} onClick={() => handleRemoveDocument(document.id)} />
-                                    </Badge>
-                                ))}
+                                {renderBadges(selectedDocuments, FaFile, handleRemoveDocument)}
                             </div>
                             <DropdownButton
                                 id="dropdown-basic-button"

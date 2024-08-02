@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Form, ListGroup, Modal} from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, ListGroup, Modal } from 'react-bootstrap';
 import AssistantItem from './AssistantItem';
 import AssistantEditor from './AssistantEditor';
 import PropTypes from 'prop-types';
 import api from '../../api';
-import ToastNotification, {showToast} from '../ToastNotification';
+import ToastNotification, { showToast } from '../ToastNotification';
+import './AssistantList.css';
 
 function AssistantList() {
     const [assistants, setAssistants] = useState([]);
@@ -26,7 +27,7 @@ function AssistantList() {
     };
 
     const handleCreateAssistant = () => {
-        const newAssistant = { id: null, name: '', description: '', prompt: '', sortIndex: 0 };
+        const newAssistant = { id: null, name: '', description: '', prompt: '', sortIndex: 0, tools: [], documents: [] };
         setEditingAssistant(newAssistant);
     };
 

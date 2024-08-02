@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Badge } from 'react-bootstrap';
-import { FaTools, FaUser, FaFileAlt } from 'react-icons/fa';
+import { FaTools, FaUser, FaFile } from 'react-icons/fa';
 import './ChatItem.css';
 
 function ChatItem({ chat, onSelect, onEdit, onDelete }) {
@@ -23,7 +23,7 @@ function ChatItem({ chat, onSelect, onEdit, onDelete }) {
                     <div className="chat-item-badges">
                         {renderBadges(chat.assistants, FaUser)}
                         {renderBadges(chat.tools, FaTools)}
-                        {renderBadges(chat.documents, FaFileAlt)}
+                        {renderBadges(chat.documents, FaFile)}
                     </div>
                 </div>
                 <div className="chat-item-buttons">
@@ -39,7 +39,7 @@ function ChatItem({ chat, onSelect, onEdit, onDelete }) {
                     <div className="chat-item-badges">
                         {renderBadges(chat.assistants, FaUser)}
                         {renderBadges(chat.tools, FaTools)}
-                        {renderBadges(chat.documents, FaFileAlt)}
+                        {renderBadges(chat.documents, FaFile)}
                     </div>
                 </div>
                 <div className="chat-item-buttons">

@@ -1,0 +1,28 @@
+.assistant-list-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-group {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .list-group {
+        display: table;
+        width: 100%;
+    }
+    .list-group-item {
+        display: table-row;
+        width: 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    .list-group-item {
+        display: block;
+        width: 100%;
+    }
+}

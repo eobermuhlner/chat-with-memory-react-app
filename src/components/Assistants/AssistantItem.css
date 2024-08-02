@@ -1,0 +1,64 @@
+.assistant-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.assistant-item-table, .assistant-item-card {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .assistant-item-table {
+        display: table;
+        width: 100%;
+    }
+    .assistant-item-title {
+        display: table-cell;
+        width: 30%;
+        padding: 8px;
+        cursor: pointer;
+    }
+    .assistant-item-badges-container {
+        display: table-cell;
+        padding: 8px;
+        width: 50%;
+    }
+    .assistant-item-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .assistant-item-buttons {
+        display: table-cell;
+        width: 20%;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 767px) {
+    .assistant-item-card {
+        display: block;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+    .assistant-item-buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }
+    .assistant-item-badges-container {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+    }
+    .assistant-item-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}
