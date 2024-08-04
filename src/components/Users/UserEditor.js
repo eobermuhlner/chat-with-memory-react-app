@@ -10,6 +10,8 @@ function UserEditor({ user, onClose, onSave }) {
     const [username, setUsername] = useState(user.username);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [prompt, setPrompt] = useState(user.prompt || '');
+    const [openApiKey, setOpenApiKey] = useState(user.openApiKey || '');
     const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
     const [roles, setRoles] = useState(user.roles || []);
     const [availableRoles, setAvailableRoles] = useState([]);
@@ -37,7 +39,7 @@ function UserEditor({ user, onClose, onSave }) {
             return;
         }
 
-        const updatedUser = { ...user, username, password: password || user.password, roles };
+        const updatedUser = { ...user, username, password: password || user.password, prompt, openApiKey, roles };
         try {
             if (user.id === null) {
                 const response = await api.post(`/users`, updatedUser);
@@ -101,6 +103,23 @@ function UserEditor({ user, onClose, onSave }) {
                                 </Form.Group>
                             </>
                         )}
+                        <Form.Group>
+                            <Form.Label>Prompt</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={6}
+                                value={prompt}
+                                onChange={(e) => setPrompt(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>OpenAPI Key</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={openApiKey}
+                                onChange={(e) => setOpenApiKey(e.target.value)}
+                            />
+                        </Form.Group>
                         <Form.Group>
                             <Form.Label>Roles</Form.Label>
                             <div className="d-flex align-items-center">
