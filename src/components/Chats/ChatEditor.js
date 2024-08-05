@@ -13,6 +13,7 @@ function ChatEditor({ chat, onClose, onSave }) {
     const [selectedTools, setSelectedTools] = useState(chat.tools || []);
     const [documents, setDocuments] = useState([]);
     const [selectedDocuments, setSelectedDocuments] = useState(chat.documents || []);
+    const [isTemplate, setIsTemplate] = useState(chat.isTemplate || false)
 
     useEffect(() => {
         api.get('/assistants')
@@ -50,7 +51,7 @@ function ChatEditor({ chat, onClose, onSave }) {
             return;
         }
 
-        const updatedChat = { ...chat, title, prompt, assistants: selectedAssistants, tools: selectedTools, documents: selectedDocuments };
+        const updatedChat = { ...chat, title, prompt, isTemplate, assistants: selectedAssistants, tools: selectedTools, documents: selectedDocuments };
         try {
             if (chat.id == null) {
                 const response = await api.post('/chats', updatedChat);
@@ -191,6 +192,14 @@ function ChatEditor({ chat, onClose, onSave }) {
                                 ))}
                             </DropdownButton>
                         </div>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Check
+                            type="checkbox"
+                            label="Template"
+                            checked={isTemplate}
+                            onChange={(e) => setIsTemplate(e.target.checked)}
+                        />
                     </Form.Group>
                 </Form>
             </Modal.Body>

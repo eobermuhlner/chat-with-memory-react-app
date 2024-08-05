@@ -14,6 +14,7 @@ function AssistantEditor({ assistant, onClose, onSave }) {
     const [selectedTools, setSelectedTools] = useState(assistant.tools || []);
     const [documents, setDocuments] = useState([]);
     const [selectedDocuments, setSelectedDocuments] = useState(assistant.documents || []);
+    const [isTemplate, setIsTemplate] = useState(assistant.isTemplate || false)
 
     useEffect(() => {
         const fetchToolsAndDocuments = async () => {
@@ -37,7 +38,7 @@ function AssistantEditor({ assistant, onClose, onSave }) {
             return;
         }
 
-        const updatedAssistant = { ...assistant, name, description, prompt, sortIndex, tools: selectedTools, documents: selectedDocuments };
+        const updatedAssistant = { ...assistant, name, description, prompt, sortIndex, isTemplate, tools: selectedTools, documents: selectedDocuments };
         try {
             if (assistant.id === null) {
                 const response = await api.post(`/assistants`, updatedAssistant);
@@ -165,6 +166,14 @@ function AssistantEditor({ assistant, onClose, onSave }) {
                                 ))}
                             </DropdownButton>
                         </div>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Check
+                            type="checkbox"
+                            label="Template"
+                            checked={isTemplate}
+                            onChange={(e) => setIsTemplate(e.target.checked)}
+                        />
                     </Form.Group>
                 </Form>
             </Modal.Body>
