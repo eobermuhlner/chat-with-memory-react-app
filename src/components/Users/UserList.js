@@ -79,7 +79,7 @@ function UserList() {
                     />
                 ))}
             </ListGroup>
-            {editingUser && <UserEditor user={editingUser} onClose={() => setEditingUser(null)} onSave={handleSaveEdit} />}
+            {editingUser && <UserEditor user={editingUser} onClose={() => setEditingUser(null)} onSave={handleSaveEdit} mode="edit"/>}
 
             <Modal show={!!userToDelete} onHide={handleCancelDelete}>
                 <Modal.Header closeButton>

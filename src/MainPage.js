@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Nav, Button } from 'react-bootstrap';
-import { jwtDecode}  from 'jwt-decode';
+import { Container, Row, Col, Nav, Dropdown, DropdownButton } from 'react-bootstrap';
+import { jwtDecode } from 'jwt-decode';
 import ChatList from './components/Chats/ChatList';
 import AssistantList from './components/Assistants/AssistantList';
 import ChatThread from './components/Chats/ChatThread';
 import DocumentList from './components/Documents/DocumentList';
 import UserList from './components/Users/UserList';
+import UserEditor from './components/Users/UserEditor';
+import api from './api';
 
 const MainPage = ({ loginRequired, onLogout }) => {
     const [activeTab, setActiveTab] = useState('chats');
     const [selectedChat, setSelectedChat] = useState(null);
     const [roles, setRoles] = useState([]);
+    const [showUserEditor, setShowUserEditor] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -26,6 +30,24 @@ const MainPage = ({ loginRequired, onLogout }) => {
 
     const handleBackToChatList = () => {
         setSelectedChat(null);
+    };
+
+    const handleShowUserEditor = () => {
+        const fetchCurrentUser = async () => {
+            try {
+                const response = await api.get('/current');
+                setCurrentUser(response.data);
+            } catch (error) {
+                console.error('Failed to fetch current user', error);
+            }
+        };
+        fetchCurrentUser();
+
+        setShowUserEditor(true);
+    };
+
+    const handleCloseUserEditor = () => {
+        setShowUserEditor(false);
     };
 
     return (
@@ -58,7 +80,10 @@ const MainPage = ({ loginRequired, onLogout }) => {
                         </Col>
                         <Col className="p-0" xs="auto">
                             {loginRequired && (
-                                <Button variant="outline-danger" onClick={onLogout}>Logout</Button>
+                                <DropdownButton id="dropdown-basic-button" title="Account" variant="outline-secondary">
+                                    <Dropdown.Item onClick={handleShowUserEditor}>Edit User</Dropdown.Item>
+                                    <Dropdown.Item onClick={onLogout}>Logout</Dropdown.Item>
+                                </DropdownButton>
                             )}
                         </Col>
                     </Row>
@@ -71,6 +96,17 @@ const MainPage = ({ loginRequired, onLogout }) => {
                         </Col>
                     </Row>
                 </>
+            )}
+            {showUserEditor && currentUser && (
+                <UserEditor
+                    user={currentUser}
+                    onClose={handleCloseUserEditor}
+                    onSave={(updatedUser) => {
+                        setCurrentUser(updatedUser);
+                        handleCloseUserEditor();
+                    }}
+                    mode="edit"
+                />
             )}
         </Container>
     );

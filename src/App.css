@@ -92,3 +92,38 @@
     height: 2.5rem;
 }
 
+.login-form {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.login-form .form-label {
+    font-weight: bold;
+}
+
+.login-form .form-control {
+    border-radius: 5px;
+}
+
+.login-form .login-button {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.login-form .create-account-button {
+    width: 100%;
+    background-color: #6c757d;
+    border: none;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.login-form .create-account-button:hover {
+    background-color: #5a6268;
+}
