@@ -11,7 +11,7 @@ function UserEditor({ user, onClose, onSave, mode }) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [prompt, setPrompt] = useState(user.prompt || '');
-    const [openApiKey, setOpenApiKey] = useState(user.openApiKey || '');
+    const [openaiApiKey, setOpenaiApiKey] = useState(user.openaiApiKey || '');
     const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
     const [roles, setRoles] = useState(user.roles || []);
     const [availableRoles, setAvailableRoles] = useState([]);
@@ -44,7 +44,7 @@ function UserEditor({ user, onClose, onSave, mode }) {
         }
 
         if (mode === 'register') {
-            const newUser = { ...user, username, password, prompt, openApiKey, roles };
+            const newUser = { ...user, username, password, prompt, openaiApiKey, roles };
             try {
                 const response = await api.post('/register', newUser);
                 onSave(response.data);
@@ -54,7 +54,7 @@ function UserEditor({ user, onClose, onSave, mode }) {
                 showToast('Error registering user: ' + error.message, 'error');
             }
         } else {
-            const updatedUser = { ...user, username, password: password || user.password, prompt, openApiKey, roles };
+            const updatedUser = { ...user, username, password: password || user.password, prompt, openaiApiKey, roles };
             try {
                 if (user.id === null) {
                     const response = await api.post('/users', updatedUser);
@@ -132,8 +132,8 @@ function UserEditor({ user, onClose, onSave, mode }) {
                             <Form.Label>OpenAPI Key</Form.Label>
                             <Form.Control
                                 type="text"
-                                value={openApiKey}
-                                onChange={(e) => setOpenApiKey(e.target.value)}
+                                value={openaiApiKey}
+                                onChange={(e) => setOpenaiApiKey(e.target.value)}
                             />
                         </Form.Group>
                         {mode !== 'register' && (

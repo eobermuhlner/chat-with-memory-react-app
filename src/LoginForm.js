@@ -65,7 +65,7 @@ const LoginForm = ({ onLogin }) => {
 
             {showUserEditor && (
                 <UserEditor
-                    user={{ id: null, username: '', password: '', prompt: '', openApiKey: '', roles: [] }}
+                    user={{ id: null, username: '', password: '', prompt: '', openaiApiKey: '', roles: [] }}
                     onClose={() => setShowUserEditor(false)}
                     onSave={handleRegister}
                     mode="register"
